@@ -1,4 +1,4 @@
-import NonDashboardNavbar from "@/components/NonDashboardNavbar"
+import NonDashboardNavbar from "@/components/NonDashBoardNavBar"
 
 export default function Home() {
   return (
