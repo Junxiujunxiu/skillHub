@@ -3,6 +3,9 @@
 import React from 'react';
 import { motion } from "framer-motion";
 import Link from 'next/link';
+import Image from 'next/image';
+import { useCarousel } from '@/hooks/useCarousel';
+
 
 
 console.log("Motion Component:", motion);
@@ -45,18 +48,29 @@ const Landing = () => {
 
       <div className="landing__hero-images">
         {["/hero1.jpg", "/hero2.jpg", "/hero3.jpg"].map((src, index)=>(
-          <image
-             key=[src]
+          <Image
+             key={src}
              src={src}
              alt={'Hero Banner ${index + 1}'}
              fill
-             priority={index ===} 
+             priority={index === currentImage} 
+             sizes="(max-width:768px) 100vm, (max-width: 1200px) 50vw, 33vw"
+             className={`landing__hero-image ${
+              index === currentImage ? "landing__hero-image--active" : ""
+             }`}
             />
         ))}
 
       </div>
     </motion.div>
-
+        <motion.div
+        initial={{ y:20, opacity: 0 }}
+        whileInView={{y:0, opacity: 1}}
+        transition={{ duration: 0.5}}
+        viewport={{amount: 0.3, once: true}} //when it's get animated, and it does only once
+        className="landing__featured">
+          
+        </motion.div>
     </motion.div>
   )
 };
