@@ -5,10 +5,42 @@ import { motion } from "framer-motion";
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCarousel } from '@/hooks/useCarousel';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 
-console.log("Motion Component:", motion);
+const loadingSkeleton = ()=>{
+  return(
+    <div className="landing-skeleton">
+      <div className="landing-skeleton__hero">
+        <div className="landing-skeleton__hero-content">
+          <Skeleton className="landing-skeleton__title"/>
+          <Skeleton className="landing-skeleton__subtitle"/>
+          <Skeleton className="landing-skeleton__subtitle-secondary"/>
+          <Skeleton className="landing-skeleton__button"/>
+        </div>
+        <Skeleton className="landing-skeleton__hero-image"/>
+      </div>
+
+      <div className="landing-skeleton__featured">
+        <Skeleton className="landing-skeleton__featured-title"/>
+        <Skeleton className="landing-skeleton__featured-description"/>
+
+        <div className="landing-skeleton__tags">
+          {[1,2,3,4,5].map((_, index)=>(
+            <Skeleton key={index} className="landing-skeleton__tag" />
+          ))}
+        </div>
+
+        <div className="landing-skeleton__courses">
+          {[1,2,3,4].map((_,index)=>(
+            <Skeleton key={index} className="landing-skeleton_course-card"/>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const Landing = () => {
 
@@ -70,6 +102,25 @@ const Landing = () => {
         viewport={{amount: 0.3, once: true}} //when it's get animated, and it does only once
         className="landing__featured">
           
+          <h2 className="landing__featured-title">Featured Courses</h2>
+          <p className="landing__featured-description">This is the place holder for course introduction</p>
+
+          <div className="landing__tags">
+            {[
+              "web development",
+              "enterprise IT", 
+              "react next.js",
+              "enterprise network"
+              ].map((tag, index)=> (
+                <span key={index} className="landing__tag">
+                  {tag}
+                </span>
+              ))}
+          </div>
+
+          <div className="landing__courses">
+            {/* placeholder for displaying courses */}
+          </div>
         </motion.div>
     </motion.div>
   )
