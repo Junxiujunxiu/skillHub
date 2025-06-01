@@ -34,6 +34,6 @@ export const getCourse = async(
 
         res.json({ message: "Courses retrieved successfully", data: course})
     }catch (error){
-        res.status(500).json({message: "Error retreiving courses", error});
+        res.status(500).json({message: "Error retreiving course", error});
     }
 };
