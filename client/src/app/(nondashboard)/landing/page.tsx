@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCarousel } from '@/hooks/useCarousel';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useGetCoursesQuery } from '@/state/api';
 
 
 
@@ -45,6 +46,9 @@ const loadingSkeleton = ()=>{
 const Landing = () => {
 
   const currentImage = useCarousel({ totalImages: 3 });
+  //rename the data to courses.
+  const { data: courses, isLoading, isError }  = useGetCoursesQuery({});
+  console.log("courses:", courses);
 
   return (
     <motion.div
@@ -119,7 +123,20 @@ const Landing = () => {
           </div>
 
           <div className="landing__courses">
-            {/* placeholder for displaying courses */}
+            {courses && 
+              courses.slice(0, 4).map((course, index) =>(
+                <motion.div
+                key={course.courseId}
+                initial={{ y:50, opacity: 0 }}
+                whileInView={{y:0, opacity: 1}}
+                transition={{ duration: 0.5, delay: index * 0.2}}
+                viewport={{amount: 0.4}} //when it's get animated, and it does only once
+                >
+                  <CourseCardSearch
+                  course={course}/>
+                </motion.div>
+              ))
+            }
           </div>
         </motion.div>
     </motion.div>

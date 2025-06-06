@@ -92,60 +92,39 @@ const __TURBOPACK__default__export__ = globalSlice.reducer;
 
 var { r: __turbopack_require__, f: __turbopack_module_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, M: __turbopack_modules__, l: __turbopack_load__, j: __turbopack_dynamic__, P: __turbopack_resolve_absolute_path__, U: __turbopack_relative_url__, R: __turbopack_resolve_module_id_path__, b: __turbopack_worker_blob_url__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__, z: __turbopack_require_stub__ } = __turbopack_context__;
 {
+//createApi: Helps you define API endpoints.
+//fetchBaseQuery: A basic wrapper around fetch() to talk to a REST API.
+//they are designed to simplify data fetching and caching
 __turbopack_esm__({
     "api": (()=>api),
-    "useCreateCourseMutation": (()=>useCreateCourseMutation),
-    "useCreateStripePaymentIntentMutation": (()=>useCreateStripePaymentIntentMutation),
-    "useCreateTransactionMutation": (()=>useCreateTransactionMutation),
-    "useDeleteCourseMutation": (()=>useDeleteCourseMutation),
     "useGetCourseQuery": (()=>useGetCourseQuery),
-    "useGetCoursesQuery": (()=>useGetCoursesQuery),
-    "useGetTransactionsQuery": (()=>useGetTransactionsQuery),
-    "useGetUploadVideoUrlMutation": (()=>useGetUploadVideoUrlMutation),
-    "useGetUserCourseProgressQuery": (()=>useGetUserCourseProgressQuery),
-    "useGetUserEnrolledCoursesQuery": (()=>useGetUserEnrolledCoursesQuery),
-    "useUpdateCourseMutation": (()=>useUpdateCourseMutation),
-    "useUpdateUserCourseProgressMutation": (()=>useUpdateUserCourseProgressMutation),
-    "useUpdateUserMutation": (()=>useUpdateUserMutation)
+    "useGetCoursesQuery": (()=>useGetCoursesQuery)
 });
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/sonner/dist/index.mjs [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$reduxjs$2f$toolkit$2f$dist$2f$query$2f$rtk$2d$query$2e$modern$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/@reduxjs/toolkit/dist/query/rtk-query.modern.mjs [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$reduxjs$2f$toolkit$2f$dist$2f$query$2f$react$2f$rtk$2d$query$2d$react$2e$modern$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_import__("[project]/node_modules/@reduxjs/toolkit/dist/query/react/rtk-query-react.modern.mjs [app-ssr] (ecmascript) <locals>");
 ;
-;
-const customBaseQuery = async (args, api, extraOptions)=>{
+// This is a custom base query function for RTK Query.
+// It wraps around fetchBaseQuery and helps extract only the `data` part from the API response.
+const customBaseQuery = async (args, api, extraOptions // Any extra options (not commonly used)
+)=>{
+    // Create a default fetch function using the base URL from your .env config
     const baseQuery = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$reduxjs$2f$toolkit$2f$dist$2f$query$2f$rtk$2d$query$2e$modern$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["fetchBaseQuery"])({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-        prepareHeaders: async (headers)=>{
-            const token = await window.Clerk?.session?.getToken();
-            if (token) {
-                headers.set("Authorization", `Bearer ${token}`);
-            }
-            return headers;
-        }
+        baseUrl: ("TURBOPACK compile-time value", "http://localhost:8001")
     });
     try {
+        // Make the actual API request using the baseQuery
         const result = await baseQuery(args, api, extraOptions);
-        if (result.error) {
-            const errorData = result.error.data;
-            const errorMessage = errorData?.message || result.error.status.toString() || "An error occurred";
-            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].error(`Error: ${errorMessage}`);
-        }
-        const isMutationRequest = args.method && args.method !== "GET";
-        if (isMutationRequest) {
-            const successMessage = result.data?.message;
-            if (successMessage) __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].success(successMessage);
-        }
+        // If the response has a `data` field, extract the inner `data` field (e.g., response.data.data)
+        // This simplifies your component code — you get only the actual payload.
         if (result.data) {
             result.data = result.data.data;
-        } else if (result.error?.status === 204 || result.meta?.response?.status === 24) {
-            return {
-                data: null
-            };
         }
+        // Return the cleaned-up result
         return result;
     } catch (error) {
+        // If an error happens (e.g., network failure), format it in a standard way
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        // Return the error in a shape that RTK Query can understand
         return {
             error: {
                 status: "FETCH_ERROR",
@@ -158,30 +137,10 @@ const api = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f4
     baseQuery: customBaseQuery,
     reducerPath: "api",
     tagTypes: [
-        "Courses",
-        "Users",
-        "UserCourseProgress"
+        "Courses"
     ],
     endpoints: (build)=>({
-            /* 
-    ===============
-    USER CLERK
-    =============== 
-    */ updateUser: build.mutation({
-                query: ({ userId, ...updatedUser })=>({
-                        url: `users/clerk/${userId}`,
-                        method: "PUT",
-                        body: updatedUser
-                    }),
-                invalidatesTags: [
-                    "Users"
-                ]
-            }),
-            /* 
-    ===============
-    COURSES
-    =============== 
-    */ getCourses: build.query({
+            getCourses: build.query({
                 query: ({ category })=>({
                         url: "courses",
                         params: {
@@ -200,118 +159,10 @@ const api = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f4
                             id
                         }
                     ]
-            }),
-            createCourse: build.mutation({
-                query: (body)=>({
-                        url: `courses`,
-                        method: "POST",
-                        body
-                    }),
-                invalidatesTags: [
-                    "Courses"
-                ]
-            }),
-            updateCourse: build.mutation({
-                query: ({ courseId, formData })=>({
-                        url: `courses/${courseId}`,
-                        method: "PUT",
-                        body: formData
-                    }),
-                invalidatesTags: (result, error, { courseId })=>[
-                        {
-                            type: "Courses",
-                            id: courseId
-                        }
-                    ]
-            }),
-            deleteCourse: build.mutation({
-                query: (courseId)=>({
-                        url: `courses/${courseId}`,
-                        method: "DELETE"
-                    }),
-                invalidatesTags: [
-                    "Courses"
-                ]
-            }),
-            getUploadVideoUrl: build.mutation({
-                query: ({ courseId, sectionId, chapterId, fileName, fileType })=>({
-                        url: `courses/${courseId}/sections/${sectionId}/chapters/${chapterId}/get-upload-url`,
-                        method: "POST",
-                        body: {
-                            fileName,
-                            fileType
-                        }
-                    })
-            }),
-            /* 
-    ===============
-    TRANSACTIONS
-    =============== 
-    */ getTransactions: build.query({
-                query: (userId)=>`transactions?userId=${userId}`
-            }),
-            createStripePaymentIntent: build.mutation({
-                query: ({ amount })=>({
-                        url: `/transactions/stripe/payment-intent`,
-                        method: "POST",
-                        body: {
-                            amount
-                        }
-                    })
-            }),
-            createTransaction: build.mutation({
-                query: (transaction)=>({
-                        url: "transactions",
-                        method: "POST",
-                        body: transaction
-                    })
-            }),
-            /* 
-    ===============
-    USER COURSE PROGRESS
-    =============== 
-    */ getUserEnrolledCourses: build.query({
-                query: (userId)=>`users/course-progress/${userId}/enrolled-courses`,
-                providesTags: [
-                    "Courses",
-                    "UserCourseProgress"
-                ]
-            }),
-            getUserCourseProgress: build.query({
-                query: ({ userId, courseId })=>`users/course-progress/${userId}/courses/${courseId}`,
-                providesTags: [
-                    "UserCourseProgress"
-                ]
-            }),
-            updateUserCourseProgress: build.mutation({
-                query: ({ userId, courseId, progressData })=>({
-                        url: `users/course-progress/${userId}/courses/${courseId}`,
-                        method: "PUT",
-                        body: progressData
-                    }),
-                invalidatesTags: [
-                    "UserCourseProgress"
-                ],
-                async onQueryStarted ({ userId, courseId, progressData }, { dispatch, queryFulfilled }) {
-                    const patchResult = dispatch(api.util.updateQueryData("getUserCourseProgress", {
-                        userId,
-                        courseId
-                    }, (draft)=>{
-                        Object.assign(draft, {
-                            ...draft,
-                            sections: progressData.sections
-                        });
-                    }));
-                    try {
-                        await queryFulfilled;
-                    } catch  {
-                        patchResult.undo();
-                    }
-                }
             })
         })
 });
-const { useUpdateUserMutation, useCreateCourseMutation, useUpdateCourseMutation, useDeleteCourseMutation, useGetCoursesQuery, useGetCourseQuery, useGetUploadVideoUrlMutation, useGetTransactionsQuery, useCreateTransactionMutation, useCreateStripePaymentIntentMutation, useGetUserEnrolledCoursesQuery, useGetUserCourseProgressQuery, useUpdateUserCourseProgressMutation } = api;
+const { useGetCoursesQuery, useGetCourseQuery } = api;
 }}),
 "[project]/src/state/redux.tsx [app-ssr] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
