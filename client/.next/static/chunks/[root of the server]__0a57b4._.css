@@ -1034,6 +1034,11 @@ body {
   background-color: #0000;
 }
 
+.bg-gray-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity, 1));
+}
+
 .p-0 {
   padding: 0;
 }

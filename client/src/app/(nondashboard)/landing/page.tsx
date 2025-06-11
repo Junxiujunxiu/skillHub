@@ -12,7 +12,7 @@ import CourseCardSearch from '@/components/CourseCardSearch';
 
 
 
-const loadingSkeleton = ()=>{
+const LoadingSkeleton = ()=>{
   return(
     <div className="landing-skeleton">
       <div className="landing-skeleton__hero">
@@ -57,6 +57,9 @@ const Landing = () => {
   }
 
   console.log("courses:", courses);
+
+  //if it is loading, show the loading skeleton
+  if (isLoading) return <LoadingSkeleton />;
 
   return (
     <motion.div
