@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { useCarousel } from '@/hooks/useCarousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetCoursesQuery } from '@/state/api';
+import { useRouter } from 'next/navigation';
+import CourseCardSearch from '@/components/CourseCardSearch';
 
 
 
@@ -44,10 +46,16 @@ const loadingSkeleton = ()=>{
 }
 
 const Landing = () => {
-
+  const router = useRouter();
   const currentImage = useCarousel({ totalImages: 3 });
   //rename the data to courses.
   const { data: courses, isLoading, isError }  = useGetCoursesQuery({});
+
+  //handle the course click in courseCardSearch
+  const handleCourseClick = (courseId: string) => {
+    router.push(`/search?id=${courseId}`)
+  }
+
   console.log("courses:", courses);
 
   return (
@@ -132,8 +140,7 @@ const Landing = () => {
                 transition={{ duration: 0.5, delay: index * 0.2}}
                 viewport={{amount: 0.4}} //when it's get animated, and it does only once
                 >
-                  <CourseCardSearch
-                  course={course}/>
+                  <CourseCardSearch course={course} onClick={()=>handleCourseClick(course.courseId)}/>
                 </motion.div>
               ))
             }
