@@ -1039,6 +1039,11 @@ body {
   background-color: #0000;
 }
 
+.bg-primary-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(120 120 252 / var(--tw-bg-opacity, 1));
+}
+
 .p-0 {
   padding: 0;
 }
@@ -4730,6 +4735,11 @@ input[type="color"] {
 
 .hover\:bg-sidebar-accent:hover {
   background-color: hsl(var(--sidebar-accent));
+}
+
+.hover\:bg-primary-600:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(152 152 253 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:\!text-customgreys-darkGrey:hover {

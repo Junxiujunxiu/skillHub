@@ -88,7 +88,7 @@ const handleEnrollNow = (courseId: string) => {
 // The course id is passed as a query parameter in the URL
 // This allows the user to proceed to the checkout process for the selected course
 // The router.push method is used to change the URL without reloading the page
-// This is a client-side navigation, so it does not cause a full page reload
+// This is a client-side navigation, so it does not cause a full page reloadl;.
   return  <motion.div 
   initial={{ opacity: 0}}
   animate={{ opacity: 1 }}
