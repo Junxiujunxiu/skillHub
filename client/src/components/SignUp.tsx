@@ -1,26 +1,14 @@
-"use client";
-
-import { SignIn, useUser } from '@clerk/nextjs';
+import { SignUp } from '@clerk/nextjs';
 import React from 'react'
 import { dark } from '@clerk/themes';
-import { useSearchParams } from 'next/navigation';
 
-const SignInComponent = () => {
-  /* Check if the user is on the checkout page by seeing if showSignUp exists 
-  // in the URL. If yes, build a sign-up link that keeps their course and step 
-  // info. If not, just send them to the normal sign-up page.*/
-  const { user } = useUser();
-  const searchParams = useSearchParams();
-  const isCheckoutPage = searchParams.get("showSignUp") !== null;
-  const courseId = searchParams.get("id");
-
-  const signUpUrl = isCheckoutPage ? `/checkout?step=1&id=${courseId}&showSignUp=true`: "/signup"
-
-  return <SignIn 
+const SignUpComponent = () => {
+    
+  return <SignUp 
           appearance={{
             baseTheme: dark,
             elements:{
-              rootBox: "flex justify-center items-center py-5",
+              rootBox: "w-full items-center",
               cardBox: "shadow-none",
               card: "bg-customgreys-secondarybg w-full shadow-none",
               footer: {
@@ -34,10 +22,9 @@ const SignInComponent = () => {
               formButtonPrimary: "bg-primary-700 text-white-100 hover:bg-primary-600 !shadow-none",
               formFieldInput: "bg-customgreys-primarybg text-white-50 !shadow-none",
               footerActionLink: "text-primary-750 hover:text-primary-600"
-            },
+            }
           }}
-          signUpUrl={signUpUrl}
   />
 }
 
-export default SignInComponent;
+export default SignUpComponent;
