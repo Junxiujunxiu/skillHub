@@ -1,5 +1,7 @@
 {
   "/page": "app/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/(nondashboard)/search/page": "app/(nondashboard)/search/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js"
+  "/(auth)/signin/[[...signin]]/page": "app/(auth)/signin/[[...signin]]/page.js",
+  "/_not-found/page": "app/_not-found/page.js"
 }

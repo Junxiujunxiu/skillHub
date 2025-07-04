@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file://C%3A/Users/Administrator/OneDrive/Desktop/skillHub/client/src/components/Signin.tsx"],"sourcesContent":["import { SignIn } from '@clerk/nextjs';\r\nimport React from 'react'\r\nimport { dark } from '@clerk/themes';\r\n\r\nconst SignInComponent = () => {\r\n  return <SignIn \r\n          appearance={{\r\n            baseTheme: dark,\r\n            elements:{\r\n              formFieldLabel: \"text-white-50 font-normal\",\r\n              rootBox: \"flex justify-center items-center py-5\"\r\n            }\r\n          }}\r\n  />\r\n}\r\n\r\nexport default SignInComponent;"],"names":[],"mappings":";;;;AAEA;AAFA;;;;AAIA,MAAM,kBAAkB;IACtB,qBAAO,8OAAC,sLAAA,CAAA,SAAM;QACN,YAAY;YACV,WAAW,mKAAA,CAAA,OAAI;YACf,UAAS;gBACP,gBAAgB;gBAChB,SAAS;YACX;QACF;;;;;;AAEV;uCAEe"}},
+    {"offset": {"line": 32, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 38, "column": 0}, "map": {"version":3,"sources":["file://C%3A/Users/Administrator/OneDrive/Desktop/skillHub/client/src/app/%28auth%29/signin/%5B%5B...signin%5D%5D/page.tsx"],"sourcesContent":["import SignInComponent from \"@/components/Signin\";\r\n\r\nexport default function Page() {\r\n    return <SignInComponent />;\r\n}"],"names":[],"mappings":";;;;AAAA;;;AAEe,SAAS;IACpB,qBAAO,8OAAC,4HAAA,CAAA,UAAe;;;;;AAC3B"}},
+    {"offset": {"line": 52, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
