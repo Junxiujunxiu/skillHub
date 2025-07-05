@@ -28,7 +28,6 @@ const getRedirectedUrl = () => {
   if(userType === "teacher"){
     return "/teacher/courses";
   }
-
   //If the user is not on the checkout page and not a teacher, they are redirected to this url
   return "user/courses";
 };

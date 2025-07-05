@@ -624,47 +624,47 @@ const LoadingSkeleton = ()=>{
                                 className: "landing-skeleton__title"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 20,
+                                lineNumber: 21,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
                                 className: "landing-skeleton__subtitle"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 21,
+                                lineNumber: 22,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
                                 className: "landing-skeleton__subtitle-secondary"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 22,
+                                lineNumber: 23,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
                                 className: "landing-skeleton__button"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 23,
+                                lineNumber: 24,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 19,
+                        lineNumber: 20,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
                         className: "landing-skeleton__hero-image"
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 25,
+                        lineNumber: 26,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                lineNumber: 18,
+                lineNumber: 19,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -674,14 +674,14 @@ const LoadingSkeleton = ()=>{
                         className: "landing-skeleton__featured-title"
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 29,
+                        lineNumber: 30,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
                         className: "landing-skeleton__featured-description"
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 30,
+                        lineNumber: 31,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -696,12 +696,12 @@ const LoadingSkeleton = ()=>{
                                 className: "landing-skeleton__tag"
                             }, index, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 34,
+                                lineNumber: 35,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 32,
+                        lineNumber: 33,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -715,24 +715,24 @@ const LoadingSkeleton = ()=>{
                                 className: "landing-skeleton_course-card"
                             }, index, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 40,
+                                lineNumber: 41,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 38,
+                        lineNumber: 39,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                lineNumber: 28,
+                lineNumber: 29,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-        lineNumber: 17,
+        lineNumber: 18,
         columnNumber: 5
     }, this);
 };
@@ -749,11 +749,10 @@ const Landing = ()=>{
     const handleCourseClick = (courseId)=>{
         router.push(`/search?id=${courseId}`);
     };
-    console.log("courses:", courses);
     //if it is loading, show the loading skeleton
     if (isLoading) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(LoadingSkeleton, {}, void 0, false, {
         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-        lineNumber: 62,
+        lineNumber: 61,
         columnNumber: 25
     }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["motion"].div, {
@@ -791,7 +790,7 @@ const Landing = ()=>{
                                 children: "Courses"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 80,
+                                lineNumber: 79,
                                 columnNumber: 9
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -800,14 +799,14 @@ const Landing = ()=>{
                                     "This is the list of the courses you can enroll in.",
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                        lineNumber: 84,
+                                        lineNumber: 83,
                                         columnNumber: 11
                                     }, this),
                                     "Courses when you need them and want them."
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 82,
+                                lineNumber: 81,
                                 columnNumber: 9
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -819,23 +818,23 @@ const Landing = ()=>{
                                         children: "Search for Courses"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                        lineNumber: 90,
+                                        lineNumber: 89,
                                         columnNumber: 13
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                    lineNumber: 89,
+                                    lineNumber: 88,
                                     columnNumber: 11
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 88,
+                                lineNumber: 87,
                                 columnNumber: 9
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 78,
+                        lineNumber: 77,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -853,18 +852,18 @@ const Landing = ()=>{
                                 className: `landing__hero-image ${index === currentImage ? "landing__hero-image--active" : ""}`
                             }, src, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 98,
+                                lineNumber: 97,
                                 columnNumber: 11
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 96,
+                        lineNumber: 95,
                         columnNumber: 7
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                lineNumber: 72,
+                lineNumber: 71,
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["motion"].div, {
@@ -890,7 +889,7 @@ const Landing = ()=>{
                         children: "Featured Courses"
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 120,
+                        lineNumber: 119,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -898,7 +897,7 @@ const Landing = ()=>{
                         children: "This is the place holder for course introduction"
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 121,
+                        lineNumber: 120,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -913,12 +912,12 @@ const Landing = ()=>{
                                 children: tag
                             }, index, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 130,
+                                lineNumber: 129,
                                 columnNumber: 17
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 123,
+                        lineNumber: 122,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -944,29 +943,29 @@ const Landing = ()=>{
                                     onClick: ()=>handleCourseClick(course.courseId)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                    lineNumber: 146,
+                                    lineNumber: 145,
                                     columnNumber: 19
                                 }, this)
                             }, course.courseId, false, {
                                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                                lineNumber: 139,
+                                lineNumber: 138,
                                 columnNumber: 17
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                        lineNumber: 136,
+                        lineNumber: 135,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-                lineNumber: 113,
+                lineNumber: 112,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/(nondashboard)/landing/page.tsx",
-        lineNumber: 65,
+        lineNumber: 64,
         columnNumber: 5
     }, this);
 };

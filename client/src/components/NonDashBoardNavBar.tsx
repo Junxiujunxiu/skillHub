@@ -1,6 +1,8 @@
 import { Bell, BookOpen} from 'lucide-react'
 import React from 'react'
 import Link from 'next/link'; // navigation
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 
 //testing on the left, search bar on the right
 const NonDashBoardNavBar = () => {
@@ -28,7 +30,27 @@ const NonDashBoardNavBar = () => {
           <Bell className="nondashboard-navbar__notification-icon" />
         </button>
 
-        {/* sign in buttons */}        
+        {/* renders when sign in */} 
+        <SignedIn>
+          <UserButton 
+            appearance={{
+              baseTheme: dark,
+              elements: {
+                userButtonOuterIdentifier: "text-customgreys-dirtyGrey",
+                userButtonBox: "scale-90 sm:scale-100"
+              }
+            }}
+            />
+         </SignedIn> 
+         {/* renders when sign out */} 
+         <SignedOut>
+          <Link href="/signin" className="nondashboard-navbar__auth-button--login">
+            Log in
+          </Link>
+          <Link href="/signup" className="nondashboard-navbar__auth-button--signup">
+            Sign up
+          </Link>
+          </SignedOut>    
       </div>
       </div>
     </nav>
