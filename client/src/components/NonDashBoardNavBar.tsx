@@ -42,7 +42,7 @@ const NonDashBoardNavBar = () => {
             }}
             />
          </SignedIn> 
-         {/* renders when sign out */} 
+         {/* renders when sign out*/} 
          <SignedOut>
           <Link href="/signin" className="nondashboard-navbar__auth-button--login">
             Log in
