@@ -10,6 +10,43 @@
 !.yarn/releases
 !.yarn/versions
 
+# Local DynamoDB (common folder names and files)
+.dynamodb/
+dynamodb-local/
+*.db
+*.ldb
+*.sqlite
+
+# Optional: Ignore all image file changes (if you don't want to track them)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+
+# Ignore OS & IDE artifacts
+Thumbs.db
+ehthumbs.db
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Ignore log files and temp files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Optional: Ignore build artifacts from TypeScript or tools
+*.map
+*.cache
+.cache/
+.cache-loader/
+
 # testing
 /coverage
 
