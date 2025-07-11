@@ -4,7 +4,7 @@ import {UserProfile} from "@clerk/nextjs"
 import { dark } from '@clerk/themes'
 
 // This page is used to display the teacher profile using Clerk's UserProfile component
-const UserProfilePage = () => {
+const TeacherProfilePage = () => {
   return (
     <>
         <Header title="Profile" subtitle ="View your profile" />
@@ -27,4 +27,4 @@ const UserProfilePage = () => {
   )
 }
 
-export default UserProfilePage
+export default TeacherProfilePage
