@@ -1,18 +1,23 @@
+"use client";
+
 import { Bell, BookOpen} from 'lucide-react'
 import React from 'react'
 import Link from 'next/link'; // navigation
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 
 //testing on the left, search bar on the right
 const NonDashBoardNavBar = () => {
+const {user} = useUser();
+const userRole = user?.publicMetadata?.userType as "student" | "teacher";
+
   return ( 
     <nav className="nondashboard-navbar">
-      <div className="nondashboard-navbar__container">
+      <div className="nondashboard-navbar__container"> 
         <div className="nondashboard-navbar__search">
             <Link href="/" className="nondashboard-navbar__brand" >  
               BrandName
-            </Link>
+            </Link> 
             <div className="flex items-center gap-4">
               <div className="relative group">
               <Link href="/search" className="nondashboard-navbar__search-input">
@@ -40,6 +45,11 @@ const NonDashBoardNavBar = () => {
                 userButtonBox: "scale-90 sm:scale-100"
               }
             }}
+            showName={true}
+            userProfileMode='navigation'
+            userProfileUrl= {
+              userRole === "teacher" ? "/teacher/profile" : "/user/profile"
+            }
             />
          </SignedIn> 
          {/* renders when sign out*/} 
