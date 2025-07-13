@@ -1,4 +1,5 @@
 "use client";
+import AppSidebar from "@/components/AppSidebar";
 import Loading from "@/components/Loading";
 import Navbar from "@/components/Navbar"
 import { SidebarProvider } from "@/components/ui/sidebar";
