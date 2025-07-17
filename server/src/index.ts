@@ -5,10 +5,11 @@ import cors from "cors";                 // Allow cross-origin requests
 import helmet from "helmet";             // Add security headers
 import morgan from "morgan";             // Logging tool
 import * as dynamoose from "dynamoose";  // DynamoDB ORM
-
+import { createClerkClient } from "@clerk/express"; 
 /*ROute imports*/
 import courseRoutes from "./routes/courseRoutes";
 import { DynamoDB} from "@aws-sdk/client-dynamodb";
+import useCLerkRoutes from "./routes/userClerkRoutes";
 
 /*CONFIGURATIONS */
  // Loads variables from `.env` file into `process.env`
@@ -29,6 +30,10 @@ if (!isProduction) {
     dynamoose.aws.ddb.set(ddb); // Attach DynamoDB client to Dynamoose
   }
 
+  export const clerkClient = createClerkClient({
+    secretKey: process.env.CLERK_API_KEY,
+  })
+
 /* EXPRESS SETUP */
 const app = express();
 app.use(express.json()); // Parse JSON request bodies
@@ -47,6 +52,8 @@ app.get("/", (req, res) =>{
 
 //For any request that starts with /course, go check what’s inside courseRoutes”
 app.use("/courses", courseRoutes);
+
+app.use("/users/clerk", useCLerkRoutes);
 
 /*SERVER*/
 //If you're in development (!isProduction), the server runs on the specified port.
