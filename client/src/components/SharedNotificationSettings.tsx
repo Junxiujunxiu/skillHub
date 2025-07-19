@@ -9,6 +9,8 @@ import Header from './Header';
 import { CustomFormField } from './CustomFormField';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { toast } from 'sonner';
 
 /*
  Displays a "Notification Settings" form for the logged-in user,
@@ -21,7 +23,7 @@ import { Form } from "@/components/ui/form";
 
 const SharedNotificationSettings = ({
     title = "Notification Settings", 
-    subtitle="Manage your notification seetings"}:
+    subtitle="Manage your notification settings"}:
      SharedNotificationSettingsProps) => {
     const { user } = useUser();
     const [updateUser] = useUpdateUserMutation();
@@ -67,7 +69,9 @@ const SharedNotificationSettings = ({
 
         try {
             await updateUser(updateduser);
+            toast.success("Notification settings updated successfully");
         }catch (error) {
+            toast.error("Failed to update settings");
             console.error("Failed to update user settings:", error);
         }
 
@@ -102,7 +106,21 @@ const SharedNotificationSettings = ({
                         label="SMS Alerts"
                         type="switch"
                         />
+                     <CustomFormField
+                        name="notificationFrequency"
+                        label="Notification Frequency"
+                        type="select"
+                        options={[
+                            { value: "immediate", label: "Immediate" },
+                            { value: "daily", label: "Daily" },
+                            { value: "weekly", label: "Weekly" }
+                        ]}
+                        />
                 </div>
+
+                <Button type="submit" className="notification-settings__submit">
+                    update Settings
+                </Button>
             </form>
         </Form>
     </div>
