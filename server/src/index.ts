@@ -5,7 +5,7 @@ import cors from "cors";                 // Allow cross-origin requests
 import helmet from "helmet";             // Add security headers
 import morgan from "morgan";             // Logging tool
 import * as dynamoose from "dynamoose";  // DynamoDB ORM
-import { createClerkClient } from "@clerk/express"; 
+import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express"; 
 /*ROute imports*/
 import courseRoutes from "./routes/courseRoutes";
 import { DynamoDB} from "@aws-sdk/client-dynamodb";
@@ -43,6 +43,8 @@ app.use(morgan("common")); // Logs requests to the console
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cors());
+app.use(clerkMiddleware());//use Clerk to check who the user is on every request.
+
 
 /*ROUTES*/
 // "/" here only matches the root path like http://localhost:3000/
@@ -52,8 +54,9 @@ app.get("/", (req, res) =>{
 
 //For any request that starts with /course, go check what’s inside courseRoutes”
 app.use("/courses", courseRoutes);
-
-app.use("/users/clerk", useCLerkRoutes);
+//for all /users/clerk/... URLs, make sure the user is signed in. 
+//If they are, let them go to the correct page or do the correct action.”
+app.use("/users/clerk", requireAuth(), useCLerkRoutes);
 
 /*SERVER*/
 //If you're in development (!isProduction), the server runs on the specified port.

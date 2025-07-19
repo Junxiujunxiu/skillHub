@@ -4,6 +4,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {BaseQueryApi, FetchArgs} from "@reduxjs/toolkit/query";
 import { User } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
+import { Clerk } from "@clerk/clerk-js"
+import { toast } from "sonner";
 
 // This is a custom base query function for RTK Query.
 // It wraps around fetchBaseQuery and helps extract only the `data` part from the API response.
@@ -17,18 +20,44 @@ const customBaseQuery = async (
   // Create a default fetch function using the base URL from your .env config
   const baseQuery = fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL, // e.g., "http://localhost:8001"
+    //For every API call, first get the user’s Clerk token. If it exists, 
+    // attach it to the request so the backend knows the user is allowed to access the data.”
+    prepareHeaders: async (headers) => {
+      const token = await window.Clerk?.session?.getToken();
+      if(token) {
+        headers.set("Authorization", `Bearer ${token}`); // Set the Authorization header with the token
+      }
+    }
   });
 
   try {
     // Make the actual API request using the baseQuery
     const result: any = await baseQuery(args, api, extraOptions);
+    // “If there’s an error after calling the API, show a red error message popup (toast) with the reason.”
+    if(result.error) {
+      const errorData = result.error.data;
+      const errorMessage = errorData?.message || result.error.status.toString() || "An error occurred";
+      toast.error(`Error: ${errorMessage}`);
+    }
+    // “If the request is not a GET (like POST, PUT, DELETE), and the server sent back a success message, show it as a green toast popup.”
+    const isMutationRequest = (args as FetchArgs).method && (args as FetchArgs).method !== "GET";
 
+    if (isMutationRequest) {
+      const successMessage = result.data?.message;
+      if (successMessage) {
+        toast.success(successMessage);
+      }}
     // If the response has a `data` field, extract the inner `data` field (e.g., response.data.data)
     // This simplifies your component code — you get only the actual payload.
     if (result.data) {
       result.data = result.data.data;
-    }
-
+    }else if (
+      // If the response is empty (like a DELETE request), return null
+      result.error?.status === 204 || 
+      result.meta?.response?.status === 24)
+      {
+        return {data: null};
+      }
     // Return the cleaned-up result
     return result;
 

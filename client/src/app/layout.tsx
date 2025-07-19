@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={`${dmSans.className}`} >
         <Providers>
           <div className="root-layout">{children}</div>
-          <Toaster position="top-center" />
+          <Toaster richColors closeButton />
           </Providers> 
         </body>
     </html>
