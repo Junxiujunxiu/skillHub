@@ -103,8 +103,24 @@ export const api = createApi({
     getCourse: build.query<Course, string>({
       query: (id) => `courses/${id}`,
       providesTags: (result, error, id) =>[{type: "Courses", id}],
-    })
+    }),
+// This endpoint is used to create a Stripe payment intent
+    createStripePaymentIntent: build.mutation<
+      {clientSecret: string},
+      {amount:number}
+     >({
+      query: ({ amount }) => ({
+        url: `/transactions/stripe/payment-intent`,
+        method: "POST",
+        body: {amount},
+      }),
+    }),
   }),
 });
 
-export const { useUpdateUserMutation, useGetCoursesQuery, useGetCourseQuery} = api;
+export const { useUpdateUserMutation, useGetCoursesQuery, useGetCourseQuery, useCreateStripePaymentIntentMutation} = api;
+
+/*note: "Hey, here’s how to call the backend endpoint at /transactions/stripe/payment-intent using a POST request, and here's what kind of data we send and receive."
+"Hey frontend, when we call useCreateStripePaymentIntentMutation(), send a POST request to this backend URL."
+In api.ts, you're not defining the endpoint, you're mapping it so the frontend knows how to talk to it
+The hook useCreateStripePaymentIntentMutation is what you use to trigger that request from a component*/ 

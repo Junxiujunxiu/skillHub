@@ -10,6 +10,7 @@ import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express"
 import courseRoutes from "./routes/courseRoutes";
 import { DynamoDB} from "@aws-sdk/client-dynamodb";
 import useCLerkRoutes from "./routes/userClerkRoutes";
+import transactionRoutes from "./routes/transactionRoutes";
 
 /*CONFIGURATIONS */
  // Loads variables from `.env` file into `process.env`
@@ -57,6 +58,8 @@ app.use("/courses", courseRoutes);
 //for all /users/clerk/... URLs, make sure the user is signed in. 
 //If they are, let them go to the correct page or do the correct action.”
 app.use("/users/clerk", requireAuth(), useCLerkRoutes);
+// For any request that starts with /transactions, go check what’s inside transactionRoutes”
+app.use("/transactions", requireAuth(), transactionRoutes);
 
 /*SERVER*/
 //If you're in development (!isProduction), the server runs on the specified port.
