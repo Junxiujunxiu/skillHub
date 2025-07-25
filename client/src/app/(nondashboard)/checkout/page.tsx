@@ -1,9 +1,11 @@
 import Loading from '@/components/Loading';
+import WizardStepper from '@/components/WizardStepper';
 import { useUser } from '@clerk/nextjs'
 import React from 'react'
 
 const CheckoutWizard = () => {
     const { isLoaded } = useUser();
+    const checkoutStep = useCheckoutNavigation(); // This would typically come from state or props
 
 if(!isLoaded) return <Loading />;
 

@@ -22,6 +22,7 @@ const WizardStepper = ({ currentStep }: WizardStepperProps) => {
                   "wizard-stepper__circle--upcoming": currentStep < step,
                 })}
               >
+                {/* (a shorthand for if...else) */}
                 {currentStep > step || (currentStep === 3 && step === 3) ? (
                   <Check className="w-5 h-5" />
                 ) : (
