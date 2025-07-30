@@ -1,6 +1,8 @@
+"use client"
+
+import CoursePreview from '@/components/CoursePreview';
 import Loading from '@/components/Loading';
 import { useCurrentCourse } from '@/hooks/useCurrentCourse';
-import { useGetCourseQuery } from '@/state/api';
 import { useSearchParams } from 'next/navigation';
 import React, { use } from 'react'
 
@@ -14,7 +16,13 @@ const CheckoutDetailsPage = () => {
     if(!selectedCourse) return <div>No course found</div>;
 
   return (
-    <div>CheckoutDetailsPage</div>
+    <div className="checkout-details">
+      <div className="checkout-details__container">
+        <div className="checkout-details__preview">
+          <CoursePreview course={selectedCourse} />
+        </div>
+      </div>
+    </div>
   )
 }
 

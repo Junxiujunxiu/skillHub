@@ -23,10 +23,10 @@ export const getCourse = async(
     req: Request,
     res: Response
 ): Promise<void> => {
-    const {courseID} = req.params;
+    const {courseId} = req.params;
     try{
         //will try to find and return that one course.
-        const course = await Course.get(courseID);
+        const course = await Course.get(courseId);
         if(!course){
             res.status(404).json({message: "Course not found"});
             return;
