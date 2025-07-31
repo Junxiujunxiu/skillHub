@@ -20,7 +20,7 @@ const SignInComponent = () => {
   //get url to redirect the user after signing in
 const getRedirectedUrl = () => {
   if(isCheckoutPage){
-    return `/checkout?step=2&id=${courseId}`
+    return `/checkout?step=2&id=${courseId}&showSignUp=true`;
   }
 
   //extract user type from metadata and check if the user is a teacher then redirect them to the teacher dashboard
@@ -31,7 +31,7 @@ const getRedirectedUrl = () => {
   //If the user is not on the checkout page and not a teacher, they are redirected to this url
   return "user/courses";
 };
-  return <SignIn 
+  return (<SignIn 
           appearance={{
             baseTheme: dark,
             elements:{
@@ -60,6 +60,7 @@ const getRedirectedUrl = () => {
           //user is redirected to the home page after signing out
           afterSignOutUrl="/"
   />
-}
+ )
+};
 
 export default SignInComponent;
