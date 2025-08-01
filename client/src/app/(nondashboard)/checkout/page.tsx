@@ -18,7 +18,7 @@ const renderStep = () => {
         case 1:
             return <CheckoutDetailsPage />
         case 2:
-            return "payment page";
+            return <PaymentPage />;
         case 3:
             return "completion page";
         default:
