@@ -7,15 +7,46 @@ import { useClerk, useUser } from '@clerk/nextjs';
 import CoursePreview from '@/components/CoursePreview';
 import { CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCreateTransactionMutation } from '@/state/api';
+import { toast } from 'sonner';
 
 const PaymentPageContent = () => {
   const stripe = useStripe();
   const elements = useElements();
-  //const [createTransaction] = useCreateTransactionMutation();
+  const [createTransaction] = useCreateTransactionMutation();
   const {navigateToStep} = useCheckoutNavigation();
   const { course, courseId } = useCurrentCourse();
   const { user } = useUser();
   const { signOut } = useClerk();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if(!stripe || !elements) {
+      toast.error("Stripe service is not available");
+      return;
+    }
+    //check if stripe is ready
+    const result = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${process.env.NEXT_PUBLIC_STRIPE_REDIRECT_URL}?id=${courseId}`,
+      },
+      redirect: "if_required",
+    });
+    //if payment was successful, prepare the transaction data
+    if (result.paymentIntent?.status === "succeeded"){
+      const transactionData: Partial<Transaction> ={
+        transactionId: result.paymentIntent.id,
+        userId: user?.id,
+        courseId: courseId,
+        paymentProvider: "stripe",
+        amount: course?.price || 0,
+      };
+      //save the transaction and move to next step.
+      await createTransaction(transactionData), navigateToStep(3);
+    }
+  };
 
   if(!course) return null;
 

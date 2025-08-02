@@ -1,8 +1,9 @@
 import express from "express";
-import { createStripePaymemtIntent } from "../controllers/transactionController";
+import { createStripePaymemtIntent, createTransaction } from "../controllers/transactionController";
 
 const router = express.Router();
 
+router.post("/", createTransaction);
 router.post("/stripe/payment-intent", createStripePaymemtIntent);
 
 export default router;

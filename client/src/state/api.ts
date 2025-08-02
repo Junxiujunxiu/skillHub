@@ -76,13 +76,13 @@ const customBaseQuery = async (
 
 
 //it just sends the GET request with the URL (and optional query param), gets back an array of courses, and tags it as "Courses".
-//
 export const api = createApi({
   baseQuery: customBaseQuery,
   reducerPath: "api",
   tagTypes: ["Courses", "Users"], // Define the types of data that can be cached and invalidated
   endpoints: (build) => ({
 
+    //update user
     updateUser: build.mutation<User, Partial<User> & { userId: string}>({
       query: ({ userId, ...updatedUser }) => ({
         url: `users/clerk/${userId}`,
@@ -91,7 +91,7 @@ export const api = createApi({
       }),
       invalidatesTags: ["Users"],
     }),
-
+    //get courses
     getCourses: build.query<Course[], {category?: string}>({
       query: ({ category }) => ({
         url: "courses",
@@ -103,6 +103,7 @@ export const api = createApi({
       query: (id) => `courses/${id}`,
       providesTags: (result, error, id) =>[{type: "Courses", id}],
     }),
+
 // This endpoint is used to create a Stripe payment intent
     createStripePaymentIntent: build.mutation<
       {clientSecret: string},
@@ -114,10 +115,27 @@ export const api = createApi({
         body: {amount},
       }),
     }),
+
+    //create transactions
+    createTransaction: build.mutation<Transaction, Partial<Transaction>>({
+      query: (transaction) => ({
+        url: "transactions",
+        method: "POST",
+        body: transaction,
+      }),
+    }),
+
+
   }),
 });
 
-export const { useUpdateUserMutation, useGetCoursesQuery, useGetCourseQuery, useCreateStripePaymentIntentMutation} = api;
+export const { 
+  useUpdateUserMutation, 
+  useGetCoursesQuery, 
+  useGetCourseQuery, 
+  useCreateTransactionMutation,
+  useCreateStripePaymentIntentMutation
+} = api;
 
 /*note: "Hey, here’s how to call the backend endpoint at /transactions/stripe/payment-intent using a POST request, and here's what kind of data we send and receive."
 "Hey frontend, when we call useCreateStripePaymentIntentMutation(), send a POST request to this backend URL."
