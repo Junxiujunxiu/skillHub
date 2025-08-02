@@ -1,6 +1,9 @@
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
+import Course from "../models/courseModel";
+import Transaction from "../models/transactionModel";
+import UserCourseProgress from "../models/userCourseProgressModel";
 
 dotenv.config(); 
 
@@ -23,10 +26,11 @@ export const createStripePaymemtIntent = async(
         amount = 50;
     }
 
+    //Returns a PaymentIntent object which includes the client_secret.
     try{
         const paymentIntent = await stripe.paymentIntents.create({
             amount, 
-            currency: "usd", // Australian Dollar
+            currency: "usd", 
             automatic_payment_methods: {
                 enabled: true,
                 allow_redirects: "never"
@@ -39,5 +43,64 @@ export const createStripePaymemtIntent = async(
         }})
     }catch (error){
         res.status(500).json({message: "Error creating stripe payment intent", error});
+    }
+};
+
+export const createTransaction = async(
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const { userId, courseId, transactionId, amount, paymentProvider } = req.body;
+
+    try{
+        //1. get course info
+        const course = await Course.get(courseId);
+
+        //2. create transaction record with the data from the frontend.
+        const newTransaction = new Transaction({
+            dateTime: new Date().toISOString(),
+            userId,
+            courseId,
+            transactionId,
+            amount,
+            paymentProvider
+        })
+        await newTransaction.save();
+
+        //3.create initial course progress
+        const initialProgress = new UserCourseProgress({
+            userId,
+            courseId,
+            enrollmentDate: new Date().toISOString(),
+            overallProgress: 0,
+            sections: course.sections.map((section: any) =>({
+                sectionId: section.sectionId,
+                chapters: section.chapters.map((chapter: any) =>({
+                    chapterId: chapter.chapterId,
+                    completed: false,
+                })),
+            })),
+            lastAccessedTimestamp: new Date().toISOString(),
+        });
+        await initialProgress.save();
+        //4.Add the user to the course’s enrollment list
+        //This updates the course so the backend knows this user is now enrolled.
+        await Course.update(
+            { courseId },
+            {
+                $ADD: {
+                    enrollments: [{ userId }],
+                },
+            }
+        );
+        //Sends back transaction and progress data
+        res.json({ 
+            message: "Purchase Course successfully", 
+            data: {
+                transaction: newTransaction,
+                courseProgress: initialProgress,
+        }});
+    }catch (error){
+        res.status(500).json({message: "Error creating transaction and enrollment", error});
     }
 };
