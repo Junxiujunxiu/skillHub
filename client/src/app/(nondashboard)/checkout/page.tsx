@@ -6,6 +6,7 @@ import useCheckoutNavigation from '@/hooks/useCheckoutNavigation';
 import { useUser } from '@clerk/nextjs'
 import React from 'react'
 import CheckoutDetailsPage from './details';
+import PaymentPage from './payment';
 
 const CheckoutWizard = () => {
     const { isLoaded } = useUser();
