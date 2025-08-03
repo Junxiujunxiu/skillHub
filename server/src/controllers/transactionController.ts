@@ -14,6 +14,28 @@ if(!process.env.STRIPE_SECRET_KEY) {
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+export const listTransactions = async(
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const {userId} = req.query;
+
+
+    //Returns a PaymentIntent object which includes the client_secret.
+    try{
+        const transactions = userId
+        ? await Transaction.query("userId").eq(userId).exec()
+        : await Transaction.scan().exec();
+
+        res.json({ 
+            message: "Transactions retreved successfully", 
+            data: transactions,
+        });
+    }catch (error){
+        res.status(500).json({message: "Error retreiving transactions", error});
+    }
+};
+
 // It is used to handle payments in the application
 export const createStripePaymemtIntent = async(
     req: Request,

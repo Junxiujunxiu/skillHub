@@ -19,6 +19,7 @@ const PaymentPageContent = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
 
+  //handle submit function.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -26,7 +27,7 @@ const PaymentPageContent = () => {
       toast.error("Stripe service is not available");
       return;
     }
-    //check if stripe is ready
+    //Confirm the payment with Stripe
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
@@ -34,7 +35,7 @@ const PaymentPageContent = () => {
       },
       redirect: "if_required",
     });
-    //if payment was successful, prepare the transaction data
+    //if payment was successful,  Build a transaction object to send to the backend
     if (result.paymentIntent?.status === "succeeded"){
       const transactionData: Partial<Transaction> ={
         transactionId: result.paymentIntent.id,
@@ -43,10 +44,17 @@ const PaymentPageContent = () => {
         paymentProvider: "stripe",
         amount: course?.price || 0,
       };
-      //save the transaction and move to next step.
-      await createTransaction(transactionData), navigateToStep(3);
+      //Send transaction data to backend and go to next step.
+      await createTransaction(transactionData), 
+      navigateToStep(3);
     }
   };
+
+  //trigger when the user sign out
+  const handleSignOutAndNavigate = async () => {
+    await signOut();
+    navigateToStep(1);
+  }
 
   if(!course) return null;
 
@@ -61,7 +69,7 @@ const PaymentPageContent = () => {
 
         {/* Payment Form Section */}
         <div className="payment__form-container">
-          <form className="payment__form" id="payment-form">
+          <form className="payment__form" id="payment-form" onSubmit={handleSubmit}>
             <div className="payment__content">
               <h1 className="payment__title">Checkout</h1>
               <p className="payment__subtitle">
@@ -88,7 +96,7 @@ const PaymentPageContent = () => {
       <div className="payment__actions">
         <Button
           className="hover:bg-white-50/10"
-          //onClick={handleSignOutandNavigate}
+          onClick={handleSignOutAndNavigate}
           variant="outline"
           type="button"
           >
