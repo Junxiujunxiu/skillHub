@@ -82,7 +82,8 @@ export const api = createApi({
   tagTypes: ["Courses", "Users"], // Define the types of data that can be cached and invalidated
   endpoints: (build) => ({
 
-    //update user
+    
+    /*-----------------------------user clerk-------------------------------------*/
     updateUser: build.mutation<User, Partial<User> & { userId: string}>({
       query: ({ userId, ...updatedUser }) => ({
         url: `users/clerk/${userId}`,
@@ -91,7 +92,8 @@ export const api = createApi({
       }),
       invalidatesTags: ["Users"],
     }),
-    //get courses
+    
+    /*-----------------------------courses-------------------------------------*/
     getCourses: build.query<Course[], {category?: string}>({
       query: ({ category }) => ({
         url: "courses",
@@ -102,6 +104,11 @@ export const api = createApi({
     getCourse: build.query<Course, string>({
       query: (id) => `courses/${id}`,
       providesTags: (result, error, id) =>[{type: "Courses", id}],
+    }),
+
+    /*-----------------------------transactions-------------------------------------*/
+    getTransactions: build.query<Transaction[], string>({
+      query: (userId) => `transactions?userId=${userId}`,
     }),
 
 // This endpoint is used to create a Stripe payment intent
@@ -133,6 +140,7 @@ export const {
   useUpdateUserMutation, 
   useGetCoursesQuery, 
   useGetCourseQuery, 
+  useGetTransactionsQuery,
   useCreateTransactionMutation,
   useCreateStripePaymentIntentMutation
 } = api;
