@@ -21,7 +21,7 @@ import { useGetTransactionsQuery } from "@/state/api";
 import{ useUser } from "@clerk/nextjs";
 import React, { useState } from 'react';
 
-const UserBilling = () => {
+const TeacherBilling = () => {
   // State and hooks
   const [paymentType, setPaymentType] = useState("all"); // selected filter
   const { user, isLoaded } = useUser(); // auth state from Clerk
@@ -115,4 +115,4 @@ const UserBilling = () => {
   );
 };
 
-export default UserBilling;
+export default TeacherBilling;
