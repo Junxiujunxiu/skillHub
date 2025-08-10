@@ -1,71 +1,102 @@
 import express from "express";           // Web server framework
-import dotenv from "dotenv";             // Load .env variables
-import bodyParser from "body-parser";    // Parse request bodies
-import cors from "cors";                 // Allow cross-origin requests
-import helmet from "helmet";             // Add security headers
-import morgan from "morgan";             // Logging tool
+import dotenv from "dotenv";             // Load environment variables from .env
+import bodyParser from "body-parser";    // Middleware for parsing request bodies
+import cors from "cors";                 // Middleware for enabling CORS
+import helmet from "helmet";             // Middleware for securing HTTP headers
+import morgan from "morgan";             // HTTP request logging
 import * as dynamoose from "dynamoose";  // DynamoDB ORM
-import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express"; 
-/*ROute imports*/
-import courseRoutes from "./routes/courseRoutes";
-import { DynamoDB} from "@aws-sdk/client-dynamodb";
-import useCLerkRoutes from "./routes/userClerkRoutes";
-import transactionRoutes from "./routes/transactionRoutes";
+import { 
+  clerkMiddleware, 
+  createClerkClient, 
+  requireAuth 
+} from "@clerk/express";                 // Clerk authentication middleware
 
-/*CONFIGURATIONS */
- // Loads variables from `.env` file into `process.env`
+/* =========================================================================
+   Route Imports
+   ========================================================================= */
+import courseRoutes from "./routes/courseRoutes";          // Course management routes
+import { DynamoDB } from "@aws-sdk/client-dynamodb";       // AWS DynamoDB client
+import useCLerkRoutes from "./routes/userClerkRoutes";     // User routes (via Clerk)
+import transactionRoutes from "./routes/transactionRoutes"; // Transaction/payment routes
+
+/* =========================================================================
+   Configuration
+   ========================================================================= */
+// Load environment variables from `.env` file into process.env
 dotenv.config();
-const isProduction = process.env.NODE_ENV ==="production";
+
+// Determine environment mode
+const isProduction = process.env.NODE_ENV === "production";
 
 if (!isProduction) {
-    // Use local DynamoDB for development
-    const ddb = new DynamoDB({
-      region: process.env.AWS_REGION || "ap-southeast-2",
-      endpoint: "http://localhost:8000", // Add this line for DynamoDB Local
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "dummyAccessKey",
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "dummySecretKey",
-      },
-    });
-  
-    dynamoose.aws.ddb.set(ddb); // Attach DynamoDB client to Dynamoose
-  }
+  // Local development → Use DynamoDB Local
+  const ddb = new DynamoDB({
+    region: process.env.AWS_REGION || "ap-southeast-2",
+    endpoint: "http://localhost:8000", // DynamoDB Local endpoint
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID || "dummyAccessKey",
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "dummySecretKey",
+    },
+  });
 
-  export const clerkClient = createClerkClient({
-    secretKey: process.env.CLERK_SECRET_KEY,
-  })
+  // Attach DynamoDB Local client to Dynamoose
+  dynamoose.aws.ddb.set(ddb);
+}
 
-/* EXPRESS SETUP */
+// Create Clerk server-side client for managing user data
+export const clerkClient = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
+
+/* =========================================================================
+   Express App Setup
+   ========================================================================= */
 const app = express();
-app.use(express.json()); // Parse JSON request bodies
+
+// Parse JSON request bodies
+app.use(express.json());
+
+// Apply security-related HTTP headers
 app.use(helmet());
-app.use(helmet.crossOriginResourcePolicy({policy: "cross-origin"}));
-app.use(morgan("common")); // Logs requests to the console
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+
+// Log HTTP requests to the console
+app.use(morgan("common"));
+
+// Parse incoming requests (JSON + URL encoded)
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Enable Cross-Origin Resource Sharing
 app.use(cors());
-app.use(clerkMiddleware());//use Clerk to check who the user is on every request.
 
+// Apply Clerk authentication middleware to all requests
+app.use(clerkMiddleware());
 
-/*ROUTES*/
-// "/" here only matches the root path like http://localhost:3000/
-app.get("/", (req, res) =>{
-    res.send("Hello World") //// When you visit localhost:3000/, it shows this
-})
+/* =========================================================================
+   Routes
+   ========================================================================= */
+// Root endpoint → GET /
+app.get("/", (req, res) => {
+  res.send("Hello World"); // Simple response for testing
+});
 
-//For any request that starts with /course, go check what’s inside courseRoutes”
+// Course routes → All endpoints under /courses
 app.use("/courses", courseRoutes);
-//for all /users/clerk/... URLs, make sure the user is signed in. 
-//If they are, let them go to the correct page or do the correct action.”
+
+// User routes via Clerk → All endpoints under /users/clerk (require authentication)
 app.use("/users/clerk", requireAuth(), useCLerkRoutes);
-// For any request that starts with /transactions, go check what’s inside transactionRoutes”
+
+// Transaction routes → All endpoints under /transactions (require authentication)
 app.use("/transactions", requireAuth(), transactionRoutes);
 
-/*SERVER*/
-//If you're in development (!isProduction), the server runs on the specified port.
-const port =process.env.PORT || 3000;
-if(!isProduction){
-    app.listen(port, ()=>{
-        console.log(`Server running on port ${port}`);
-    });
+/* =========================================================================
+   Server Startup
+   ========================================================================= */
+// Start the server in development mode
+const port = process.env.PORT || 3000;
+if (!isProduction) {
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
 }

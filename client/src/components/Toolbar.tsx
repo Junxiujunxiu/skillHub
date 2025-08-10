@@ -8,19 +8,22 @@ import {
 } from "@/components/ui/select";
 import { courseCategories } from "@/lib/utils";
 
-/* =========================
-   Toolbar Component
-   Provides:
-   - A search input for filtering courses by name
-   - A category dropdown for filtering courses by category
-   Calls `onSearch` and `onCategoryChange` props to pass values up to the parent.
-   ========================= */
+/* =========================================================
+   Toolbar
+   - Provides search and category filtering for courses.
+   - Includes:
+       • Text input → filters by course name.
+       • Category dropdown → filters by category.
+   - Communicates changes to parent via:
+       • onSearch(value: string)
+       • onCategoryChange(value: string)
+   ========================================================= */
 const Toolbar = ({ onSearch, onCategoryChange }: ToolbarProps) => {
   /* ---------- Local State ---------- */
   const [searchTerm, setSearchTerm] = useState("");
 
   /* ---------- Handlers ---------- */
-  // Updates local search term & notifies parent component
+  // Update search term locally & notify parent
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     onSearch(value);
@@ -29,7 +32,7 @@ const Toolbar = ({ onSearch, onCategoryChange }: ToolbarProps) => {
   /* ---------- Render ---------- */
   return (
     <div className="toolbar">
-      {/* Search input */}
+      {/* ---------- Search Input ---------- */}
       <input
         type="text"
         value={searchTerm}
@@ -38,7 +41,7 @@ const Toolbar = ({ onSearch, onCategoryChange }: ToolbarProps) => {
         className="toolbar__search"
       />
 
-      {/* Category select dropdown */}
+      {/* ---------- Category Dropdown ---------- */}
       <Select onValueChange={onCategoryChange}>
         <SelectTrigger className="toolbar__select">
           <SelectValue placeholder="Categories" />

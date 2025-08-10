@@ -1,15 +1,15 @@
 "use client";
 
-/* =========================
+/* =========================================================
    Imports
-   ========================= */
+   ========================================================= */
 import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
-import TeacherCourseCard from "@/components/TeacherCOurseCard";
+import TeacherCourseCard from "@/components/TeacherCourseCard";
 import Toolbar from "@/components/Toolbar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,40 +18,47 @@ import {
   useGetCoursesQuery,
 } from "@/state/api";
 
-/* =========================
-   Page Component
-   ========================= */
+/* =========================================================
+   Course Page Component
+   Purpose:
+   - Display all teacher-owned courses
+   - Allow searching, filtering, creating, editing, and deleting courses
+   - Integrates with RTK Query for server state and Clerk for authentication
+
+   Key Features:
+   - Client-side filtering by search term & category
+   - Uses RTK Query for data fetching and mutations
+   - Navigates to course editor on create/edit
+   - Deletes with confirmation dialog
+   ========================================================= */
 const Course = () => {
-  /* ---------- Routing & Auth ---------- */
+  /* ---------- Routing & Authentication ---------- */
   const router = useRouter();
   const { user } = useUser();
 
-  /* ---------- Server Data (RTK Query) ---------- */
-  // Load all courses once the page mounts
+  /* ---------- Fetch Courses (RTK Query) ---------- */
   const {
     data: courses,
     isLoading,
     isError,
   } = useGetCoursesQuery({ category: "all" });
 
-  /* ---------- Mutations (create / delete) ---------- */
-  // We only need the trigger functions here
+  /* ---------- Mutations (Create & Delete) ---------- */
   const [createCourse] = useCreateCourseMutation();
   const [deleteCourse] = useDeleteCourseMutation();
 
-  /* ---------- Local UI State ---------- */
+  /* ---------- Local State ---------- */
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  /* ---------- Derived Data (Filtering) ---------- */
-  // Memoized client-side filter for search + category
+  /* ---------- Derived State (Filtered Courses) ---------- */
   const filteredCourses = useMemo(() => {
     if (!courses) return [];
 
     return courses.filter((course) => {
       const matchesSearch = course.title
         .toLowerCase()
-        .includes(searchTerm.toLocaleLowerCase());
+        .includes(searchTerm.toLowerCase());
 
       const matchesCategory =
         selectedCategory === "all" || course.category === selectedCategory;
@@ -60,7 +67,7 @@ const Course = () => {
     });
   }, [courses, searchTerm, selectedCategory]);
 
-  /* ---------- Handlers (Edit / Delete / Create) ---------- */
+  /* ---------- Handlers ---------- */
   const handleEdit = (course: Course) => {
     router.push(`/teacher/courses/${course.courseId}`, { scroll: false });
   };
@@ -72,7 +79,7 @@ const Course = () => {
     if (!confirmed) return;
 
     await deleteCourse(course.courseId).unwrap();
-    // Cache invalidation in the API slice will refresh the list automatically
+    // RTK Query will refetch courses after mutation
   };
 
   const handleCreateCourse = async () => {
@@ -93,23 +100,24 @@ const Course = () => {
   /* ---------- Render ---------- */
   return (
     <div className="teacher-courses">
-      {/* Header with primary action */}
+      {/* Page Header */}
       <Header
         title="Courses"
         subtitle="Browse your courses"
         rightElement={
-          <Button onClick={handleCreateCourse} className="teacher-courses__header">
+          <Button
+            onClick={handleCreateCourse}
+            className="teacher-courses__header"
+          >
             Create course
           </Button>
         }
       />
 
-      {/* Search & Category Toolbar
-          NOTE: Verify prop name: if your Toolbar expects `onCategoryChange`,
-          update the prop below accordingly. */}
+      {/* Toolbar for Search & Category Filtering */}
       <Toolbar
         onSearch={setSearchTerm}
-        onCategoryCHange={setSelectedCategory}
+        onCategoryChange={setSelectedCategory} // Ensure prop name matches Toolbar's definition
       />
 
       {/* Courses Grid */}

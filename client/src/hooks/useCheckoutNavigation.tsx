@@ -4,29 +4,42 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect } from "react";
 
-/**
- * Custom hook to manage checkout navigation steps.
- * Handles query params, step transitions, and sign-in checks.
- */
+/* ================================
+   useCheckoutNavigation Hook
+   -------------------------------
+   PURPOSE:
+   - Manages navigation between steps in a checkout process.
+   - Reads and updates query parameters for `step` and `id`.
+   - Restricts access to certain steps based on sign-in state.
+
+   FEATURES:
+   1. Reads current step and course ID from URL.
+   2. Provides a `navigateToStep` function to update step & query params.
+   3. Prevents unauthenticated users from accessing steps beyond step 1.
+   4. Clamps step navigation between 1 and 3.
+
+   RETURNS:
+   - checkoutStep (number): The current checkout step (1–3).
+   - navigateToStep (fn): Function to change steps.
+
+   USAGE:
+   const { checkoutStep, navigateToStep } = useCheckoutNavigation();
+   navigateToStep(2); // move to step 2
+   ================================ */
 export const useCheckoutNavigation = () => {
-  // Hooks for routing, query params, and user state
+  /* ---------- Hooks ---------- */
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isLoaded, isSignedIn } = useUser();
 
-  // Extract query parameters with fallback values
+  /* ---------- Query Params ---------- */
   const courseId = searchParams.get("id") ?? "";
   const checkoutStep = parseInt(searchParams.get("step") ?? "1", 10);
 
-  /**
-   * Navigate to a specific checkout step.
-   * Ensures step stays within 1–3 and preserves course ID & sign-up flag.
-   * We wrap it with useCallback so the function doesn’t get recreated on
-   *  every render (unless courseId, isSignedIn, or router changes).
-   */
+  /* ---------- Navigation Function ---------- */
   const navigateToStep = useCallback(
     (step: number) => {
-      const newStep = Math.min(Math.max(1, step), 3); // Clamp step between 1 and 3
+      const newStep = Math.min(Math.max(1, step), 3);
       const showSignUp = isSignedIn ? "true" : "false";
 
       router.push(
@@ -37,17 +50,14 @@ export const useCheckoutNavigation = () => {
     [courseId, isSignedIn, router]
   );
 
-  /**
-   * Auto-redirect to step 1 if the user is not signed in and tries
-   * to access steps beyond the first one.
-   */
+  /* ---------- Auth Check ---------- */
   useEffect(() => {
     if (isLoaded && !isSignedIn && checkoutStep > 1) {
       navigateToStep(1);
     }
   }, [isLoaded, isSignedIn, checkoutStep, navigateToStep]);
 
-  // Expose current step and navigation function
+  /* ---------- Return API ---------- */
   return { checkoutStep, navigateToStep };
 };
 

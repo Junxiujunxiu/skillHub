@@ -14,43 +14,40 @@ import {
 
 /* =========================================================
    DroppableComponent
-   - Main drag-and-drop UI for managing course sections & chapters
+   - Renders the main drag-and-drop interface for course sections & chapters
    - Allows:
      1. Reordering sections
-     2. Reordering chapters within sections
-     3. Editing/deleting sections & chapters
-     4. Adding new chapters
-   - Uses @hello-pangea/dnd for drag/drop interactions
+     2. Reordering chapters within each section
+     3. Editing and deleting sections or chapters
+     4. Adding new chapters to sections
+   - Uses @hello-pangea/dnd for drag-and-drop handling
    ========================================================= */
 export default function DroppableComponent() {
+  /* ---------- Redux Setup ---------- */
   const dispatch = useAppDispatch();
   const { sections } = useAppSelector((state) => state.global.courseEditor);
 
-  /* ---------- Handler: Reorder Sections ---------- */
+  /* ---------- Handle Section Reorder ---------- */
   const handleSectionDragEnd = (result: any) => {
-    // Exit if dropped outside a valid location
     if (!result.destination) return;
 
     const startIndex = result.source.index;
     const endIndex = result.destination.index;
 
-    // Create a copy of sections and reorder them
     const updatedSections = [...sections];
     const [reorderedSection] = updatedSections.splice(startIndex, 1);
     updatedSections.splice(endIndex, 0, reorderedSection);
 
-    // Save new order to Redux
     dispatch(setSections(updatedSections));
   };
 
-  /* ---------- Handler: Reorder Chapters within a Section ---------- */
+  /* ---------- Handle Chapter Reorder Within Section ---------- */
   const handleChapterDragEnd = (result: any, sectionIndex: number) => {
     if (!result.destination) return;
 
     const startIndex = result.source.index;
     const endIndex = result.destination.index;
 
-    // Copy sections and update chapter order in the targeted section
     const updatedSections = [...sections];
     const updatedChapters = [...updatedSections[sectionIndex].chapters];
     const [reorderedChapter] = updatedChapters.splice(startIndex, 1);
@@ -60,7 +57,7 @@ export default function DroppableComponent() {
     dispatch(setSections(updatedSections));
   };
 
-  /* ---------- Render: Section Drag & Drop Context ---------- */
+  /* ---------- Render Main Sections List ---------- */
   return (
     <DragDropContext onDragEnd={handleSectionDragEnd}>
       <Droppable droppableId="sections">
@@ -82,14 +79,14 @@ export default function DroppableComponent() {
                         : "droppable-section--odd"
                     }`}
                   >
-                    {/* Section Header: title + edit/delete buttons */}
+                    {/* Section Header */}
                     <SectionHeader
                       section={section}
                       sectionIndex={sectionIndex}
                       dragHandleProps={draggableProvider.dragHandleProps}
                     />
 
-                    {/* Nested DragDropContext for reordering chapters */}
+                    {/* Nested Drag/Drop for Chapters */}
                     <DragDropContext
                       onDragEnd={(result) =>
                         handleChapterDragEnd(result, sectionIndex)
@@ -119,14 +116,13 @@ export default function DroppableComponent() {
                                 </Draggable>
                               )
                             )}
-                            {/* Placeholder ensures layout stability while dragging */}
                             {droppableProvider.placeholder}
                           </div>
                         )}
                       </Droppable>
                     </DragDropContext>
 
-                    {/* Button: Add a new chapter to this section */}
+                    {/* Add Chapter Button */}
                     <Button
                       type="button"
                       variant="outline"
@@ -160,9 +156,10 @@ export default function DroppableComponent() {
 
 /* =========================================================
    SectionHeader
-   - Displays a section's title, description, and action buttons
-   - Includes drag handle for reordering sections
-   - Allows editing and deleting sections
+   - Displays a section’s title and optional description
+   - Includes:
+     • Drag handle for section reordering
+     • Edit & delete buttons
    ========================================================= */
 const SectionHeader = ({
   section,
@@ -184,7 +181,7 @@ const SectionHeader = ({
             <h3 className="text-lg font-medium">{section.sectionTitle}</h3>
           </div>
 
-          {/* Action buttons: edit & delete section */}
+          {/* Section Action Buttons */}
           <div className="droppable-chapter__actions">
             <Button
               type="button"
@@ -207,7 +204,6 @@ const SectionHeader = ({
           </div>
         </div>
 
-        {/* Optional: section description */}
         {section.sectionDescription && (
           <p className="droppable-section__description">
             {section.sectionDescription}
@@ -220,9 +216,11 @@ const SectionHeader = ({
 
 /* =========================================================
    ChapterItem
-   - Displays a single chapter with title and action buttons
-   - Includes drag handle for reordering chapters
-   - Allows editing and deleting a chapter
+   - Represents a single chapter row
+   - Includes:
+     • Drag handle for chapter reordering
+     • Edit & delete buttons
+     • Chapter title display
    ========================================================= */
 const ChapterItem = ({
   chapter,
@@ -248,13 +246,13 @@ const ChapterItem = ({
           : "droppable-chapter--even"
       }`}
     >
-      {/* Chapter title with drag icon */}
+      {/* Chapter Title */}
       <div className="droppable-chapter__title">
         <GripVertical className="h-4 w-4 mb-[2px]" />
         <p className="text-sm">{`${chapterIndex + 1}. ${chapter.title}`}</p>
       </div>
 
-      {/* Chapter actions: edit & delete */}
+      {/* Chapter Action Buttons */}
       <div className="droppable-chapter__actions">
         <Button
           type="button"

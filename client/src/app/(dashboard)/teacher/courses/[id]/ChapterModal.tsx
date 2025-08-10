@@ -20,14 +20,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
-/* =========================================================
-   ChapterModal Component
-   - Renders a modal to add or edit a chapter in the course editor
-   - Uses react-hook-form + zod for validation
-   - Supports uploading a video or adding text content
-   ========================================================= */
 const ChapterModal = () => {
-  /* ---------- Redux setup ---------- */
+  /* ------------------------- Redux state & dispatcher ------------------------- */
+  // Extract modal state, selected section/chapter indices, and course sections
   const dispatch = useAppDispatch();
   const {
     isChapterModalOpen,
@@ -36,15 +31,17 @@ const ChapterModal = () => {
     sections,
   } = useAppSelector((state) => state.global.courseEditor);
 
-  /* ---------- Determine current chapter (edit mode) ---------- */
+  /* ------------------------- Current chapter (edit mode) ---------------------- */
+  // If section & chapter indices exist, retrieve the chapter being edited
   const chapter: Chapter | undefined =
     selectedSectionIndex !== null && selectedChapterIndex !== null
       ? sections[selectedSectionIndex].chapters[selectedChapterIndex]
       : undefined;
 
-  /* ---------- Form setup (react-hook-form) ---------- */
+  /* --------------------------- Form setup & validation ------------------------ */
+  // Initialize react-hook-form with zod validation schema and default values
   const methods = useForm<ChapterFormData>({
-    resolver: zodResolver(chapterSchema), // Zod schema validation
+    resolver: zodResolver(chapterSchema),
     defaultValues: {
       title: "",
       content: "",
@@ -52,17 +49,16 @@ const ChapterModal = () => {
     },
   });
 
-  /* ---------- Reset form values when editing or creating ---------- */
+  /* -------------------- Sync form with selected chapter ----------------------- */
+  // Populate the form when editing or reset when adding a new chapter
   useEffect(() => {
     if (chapter) {
-      // Editing: pre-fill form with existing chapter data
       methods.reset({
         title: chapter.title,
         content: chapter.content,
         video: chapter.video || "",
       });
     } else {
-      // Creating: reset to blank fields
       methods.reset({
         title: "",
         content: "",
@@ -71,16 +67,17 @@ const ChapterModal = () => {
     }
   }, [chapter, methods]);
 
-  /* ---------- Close modal ---------- */
+  /* ------------------------------ Close modal --------------------------------- */
   const onClose = () => {
     dispatch(closeChapterModal());
   };
 
-  /* ---------- Handle save (add or edit) ---------- */
+  /* ------------------------------ Save chapter -------------------------------- */
+  // Handles both creating a new chapter and editing an existing one
   const onSubmit = (data: ChapterFormData) => {
     if (selectedSectionIndex === null) return;
 
-    // Create new chapter object (keep existing ID if editing)
+    // Create new chapter object (retain ID if editing)
     const newChapter: Chapter = {
       chapterId: chapter?.chapterId || uuidv4(),
       title: data.title,
@@ -89,8 +86,8 @@ const ChapterModal = () => {
       video: data.video,
     };
 
+    // Add or update chapter in Redux store
     if (selectedChapterIndex === null) {
-      // Add new chapter to the section
       dispatch(
         addChapter({
           sectionIndex: selectedSectionIndex,
@@ -98,7 +95,6 @@ const ChapterModal = () => {
         })
       );
     } else {
-      // Update existing chapter in the section
       dispatch(
         editChapter({
           sectionIndex: selectedSectionIndex,
@@ -108,20 +104,19 @@ const ChapterModal = () => {
       );
     }
 
-    // Show success toast (reminder to save course)
+    // Show success notification and close modal
     toast.success(
       `Chapter added/updated successfully but you need to save the course to apply the changes`
     );
-
-    // Close modal
     onClose();
   };
 
-  /* ---------- Render modal UI ---------- */
+  /* ------------------------------- Render UI ---------------------------------- */
   return (
     <CustomModal isOpen={isChapterModalOpen} onClose={onClose}>
       <div className="chapter-modal">
-        {/* ---------- Modal Header ---------- */}
+        
+        {/* ---------- Modal header with title and close button ---------- */}
         <div className="chapter-modal__header">
           <h2 className="chapter-modal__title">Add/Edit Chapter</h2>
           <button onClick={onClose} className="chapter-modal__close">
@@ -129,20 +124,20 @@ const ChapterModal = () => {
           </button>
         </div>
 
-        {/* ---------- Chapter Form ---------- */}
+        {/* ---------- Form for chapter details ---------- */}
         <Form {...methods}>
           <form
             onSubmit={methods.handleSubmit(onSubmit)}
             className="chapter-modal__form"
           >
-            {/* Title field */}
+            {/* Chapter title field */}
             <CustomFormField
               name="title"
               label="Chapter Title"
               placeholder="Write chapter title here"
             />
 
-            {/* Content field */}
+            {/* Chapter content field */}
             <CustomFormField
               name="content"
               label="Chapter Content"
@@ -150,7 +145,7 @@ const ChapterModal = () => {
               placeholder="Write chapter content here"
             />
 
-            {/* Video upload field */}
+            {/* Chapter video file upload */}
             <FormField
               control={methods.control}
               name="video"
@@ -191,7 +186,7 @@ const ChapterModal = () => {
               )}
             />
 
-            {/* ---------- Form Actions ---------- */}
+            {/* ---------- Form actions ---------- */}
             <div className="chapter-modal__actions">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel

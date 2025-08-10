@@ -1,15 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+/*---------------------------------- STATE SHAPE ----------------------------------*/
+/*
+   Defines the structure of the slice state for the Course Editor feature:
+   - sections: Ordered list of course sections, each containing chapters.
+   - isChapterModalOpen / isSectionModalOpen: Controls modal visibility.
+   - selectedSectionIndex / selectedChapterIndex: Tracks the currently selected section/chapter for editing.
+*/
 interface InitialStateTypes {
   courseEditor: {
-    sections: Section[];
-    isChapterModalOpen: boolean;
-    isSectionModalOpen: boolean;
-    selectedSectionIndex: number | null;
-    selectedChapterIndex: number | null;
+    sections: Section[];                 // All sections in the course
+    isChapterModalOpen: boolean;         // Chapter modal visibility
+    isSectionModalOpen: boolean;         // Section modal visibility
+    selectedSectionIndex: number | null; // Currently selected section index
+    selectedChapterIndex: number | null; // Currently selected chapter index
   };
 }
 
+/*---------------------------------- INITIAL STATE ----------------------------------*/
+/*
+   Default state for the Course Editor feature:
+   - No sections yet
+   - Both modals closed
+   - No section/chapter selected
+*/
 const initialState: InitialStateTypes = {
   courseEditor: {
     sections: [],
@@ -20,18 +34,30 @@ const initialState: InitialStateTypes = {
   },
 };
 
+/*---------------------------------- SLICE: GLOBAL ----------------------------------*/
+/*
+   This slice manages all UI and data state for the Course Editor.
+   Reducers handle:
+   - Setting sections
+   - Opening/closing modals
+   - Adding, editing, deleting sections
+   - Adding, editing, deleting chapters
+*/
 export const globalSlice = createSlice({
   name: "global",
   initialState,
   reducers: {
+    /* ---------- Sections: Set entire list ---------- */
     setSections: (state, action: PayloadAction<Section[]>) => {
       state.courseEditor.sections = action.payload;
     },
+
+    /* ---------- Chapter Modal: Open/Close with selection ---------- */
     openChapterModal: (
       state,
       action: PayloadAction<{
-        sectionIndex: number | null;
-        chapterIndex: number | null;
+        sectionIndex: number | null; // Which section this chapter belongs to
+        chapterIndex: number | null; // Which chapter to edit (null = add new)
       }>
     ) => {
       state.courseEditor.isChapterModalOpen = true;
@@ -44,9 +70,10 @@ export const globalSlice = createSlice({
       state.courseEditor.selectedChapterIndex = null;
     },
 
+    /* ---------- Section Modal: Open/Close with selection ---------- */
     openSectionModal: (
       state,
-      action: PayloadAction<{ sectionIndex: number | null }>
+      action: PayloadAction<{ sectionIndex: number | null }> // null = add new; number = edit
     ) => {
       state.courseEditor.isSectionModalOpen = true;
       state.courseEditor.selectedSectionIndex = action.payload.sectionIndex;
@@ -56,6 +83,7 @@ export const globalSlice = createSlice({
       state.courseEditor.selectedSectionIndex = null;
     },
 
+    /* ---------- Sections: Add / Edit / Delete ---------- */
     addSection: (state, action: PayloadAction<Section>) => {
       state.courseEditor.sections.push(action.payload);
     },
@@ -63,13 +91,13 @@ export const globalSlice = createSlice({
       state,
       action: PayloadAction<{ index: number; section: Section }>
     ) => {
-      state.courseEditor.sections[action.payload.index] =
-        action.payload.section;
+      state.courseEditor.sections[action.payload.index] = action.payload.section;
     },
     deleteSection: (state, action: PayloadAction<number>) => {
       state.courseEditor.sections.splice(action.payload, 1);
     },
 
+    /* ---------- Chapters: Add / Edit / Delete ---------- */
     addChapter: (
       state,
       action: PayloadAction<{ sectionIndex: number; chapter: Chapter }>
@@ -102,6 +130,10 @@ export const globalSlice = createSlice({
   },
 });
 
+/*---------------------------------- EXPORTS ----------------------------------*/
+/*
+   Exported actions and reducer for use in components and store configuration.
+*/
 export const {
   setSections,
   openChapterModal,

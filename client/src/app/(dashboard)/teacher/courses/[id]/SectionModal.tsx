@@ -14,10 +14,17 @@ import { v4 as uuidv4 } from "uuid";
 
 /* =========================================================
    SectionModal Component
-   - Modal for creating or editing a course section
-   - Uses react-hook-form with zod validation
-   - Supports title & description fields
-   - Can either add a new section or edit an existing one
+   Purpose:
+   - Handles adding and editing course sections inside a modal
+   - Uses react-hook-form for form handling
+   - Validates input using zod
+   - Integrates with Redux for section management
+
+   Key Features:
+   - Modal opens when triggered via Redux state
+   - Prefills data if editing an existing section
+   - Creates new section IDs for new entries
+   - Displays success toast but requires saving the course for final commit
    ========================================================= */
 const SectionModal = () => {
   /* ---------- Redux setup ---------- */
@@ -32,7 +39,7 @@ const SectionModal = () => {
 
   /* ---------- Form setup ---------- */
   const methods = useForm<SectionFormData>({
-    resolver: zodResolver(sectionSchema), // Validate using zod schema
+    resolver: zodResolver(sectionSchema), // Validates form using zod
     defaultValues: {
       title: "",
       description: "",
@@ -42,13 +49,13 @@ const SectionModal = () => {
   /* ---------- Populate form when editing ---------- */
   useEffect(() => {
     if (section) {
-      // Editing: load section's existing values
+      // Edit mode: load existing section data
       methods.reset({
         title: section.sectionTitle,
         description: section.sectionDescription,
       });
     } else {
-      // Creating: reset to empty values
+      // New section: reset to empty form
       methods.reset({
         title: "",
         description: "",
@@ -61,9 +68,9 @@ const SectionModal = () => {
     dispatch(closeSectionModal());
   };
 
-  /* ---------- Save form handler ---------- */
+  /* ---------- Form submission handler ---------- */
   const onSubmit = (data: SectionFormData) => {
-    // Create new section object, reusing ID if editing
+    // Build section object
     const newSection: Section = {
       sectionId: section?.sectionId || uuidv4(),
       sectionTitle: data.title,
@@ -72,10 +79,10 @@ const SectionModal = () => {
     };
 
     if (selectedSectionIndex === null) {
-      // Add new section
+      // Adding a new section
       dispatch(addSection(newSection));
     } else {
-      // Edit existing section
+      // Editing an existing section
       dispatch(
         editSection({
           index: selectedSectionIndex,
@@ -84,7 +91,7 @@ const SectionModal = () => {
       );
     }
 
-    // Show success message (reminder to save course)
+    // Notify user of success but remind to save course
     toast.success(
       `Section added/updated successfully but you need to save the course to apply the changes`
     );
@@ -93,11 +100,11 @@ const SectionModal = () => {
     onClose();
   };
 
-  /* ---------- Render modal UI ---------- */
+  /* ---------- Render UI ---------- */
   return (
     <CustomModal isOpen={isSectionModalOpen} onClose={onClose}>
       <div className="section-modal">
-        {/* Modal header with title + close button */}
+        {/* Modal header */}
         <div className="section-modal__header">
           <h2 className="section-modal__title">Add/Edit Section</h2>
           <button onClick={onClose} className="section-modal__close">
@@ -111,14 +118,14 @@ const SectionModal = () => {
             onSubmit={methods.handleSubmit(onSubmit)}
             className="section-modal__form"
           >
-            {/* Section title input */}
+            {/* Section title */}
             <CustomFormField
               name="title"
               label="Section Title"
               placeholder="Write section title here"
             />
 
-            {/* Section description input */}
+            {/* Section description */}
             <CustomFormField
               name="description"
               label="Section Description"
@@ -126,7 +133,7 @@ const SectionModal = () => {
               placeholder="Write section description here"
             />
 
-            {/* Form actions */}
+            {/* Action buttons */}
             <div className="section-modal__actions">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel

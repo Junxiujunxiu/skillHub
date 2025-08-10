@@ -1,57 +1,75 @@
-"use client"
+"use client";
 
 import Loading from "@/components/Loading";
-import{
-    Select, 
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-    Table, 
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { formatPrice } from "@/lib/utils";
 import { useGetTransactionsQuery } from "@/state/api";
-import{ useUser } from "@clerk/nextjs";
-import React, { useState } from 'react';
+import { useUser } from "@clerk/nextjs";
+import React, { useState } from "react";
 
+/* =========================================================================
+   Component: TeacherBilling
+   Purpose:
+     - Displays a teacher’s payment history in a table format.
+     - Allows filtering of transactions by payment provider (All, Stripe, PayPal).
+   Authentication:
+     - Requires the user to be signed in (Clerk).
+   Data Source:
+     - Fetches transactions using RTK Query (`useGetTransactionsQuery`).
+   ========================================================================= */
 const TeacherBilling = () => {
-  // State and hooks
-  const [paymentType, setPaymentType] = useState("all"); // selected filter
-  const { user, isLoaded } = useUser(); // auth state from Clerk
-  const { data: transactions, isLoading: isLoadingTransactions } =
-    useGetTransactionsQuery(user?.id || "", { skip: !isLoaded || !user }); // fetch transactions
+  /* -------------------------- STATE & HOOKS -------------------------- */
+  const [paymentType, setPaymentType] = useState("all"); // Currently selected payment filter
+  const { user, isLoaded } = useUser(); // Auth state from Clerk
 
-  // Filtered transactions based on selected type
-  const filteredData = 
+  // Fetch transactions for the logged-in user
+  const { data: transactions, isLoading: isLoadingTransactions } =
+    useGetTransactionsQuery(user?.id || "", {
+      skip: !isLoaded || !user, // Avoid query until user data is ready
+    });
+
+  /* -------------------------- DATA FILTERING -------------------------- */
+  // Filter transactions based on selected payment type
+  const filteredData =
     transactions?.filter((transaction) => {
-      const matchesTypes = paymentType === "all" || transaction.paymentProvider === paymentType;
-      return matchesTypes; 
+      const matchesTypes =
+        paymentType === "all" ||
+        transaction.paymentProvider === paymentType;
+      return matchesTypes;
     }) || [];
 
-  // Loading / unauthenticated states
-  if(!isLoaded) return <Loading />;
-  if(!user) return <div>Please sign in to view your billing information</div>;
+  /* -------------------------- LOADING & AUTH STATES -------------------------- */
+  if (!isLoaded) return <Loading />;
+  if (!user)
+    return <div>Please sign in to view your billing information</div>;
 
-  // Main render
+  /* -------------------------- MAIN RENDER -------------------------- */
   return (
     <div className="billing">
       <div className="billing__container">
         
-        {/* Title */}
+        {/* ---------- Title ---------- */}
         <h2 className="billing__title">Payment History</h2>
-        
-        {/* Payment provider filter dropdown */}
+
+        {/* ---------- Filter Dropdown ---------- */}
         <div className="billing__filters">
           <Select value={paymentType} onValueChange={setPaymentType}>
             <SelectTrigger className="billing__select">
-              <SelectValue placeholder="payment Type"/>
+              <SelectValue placeholder="Payment Type" />
             </SelectTrigger>
 
             <SelectContent className="billing__select-content">
@@ -62,32 +80,37 @@ const TeacherBilling = () => {
                 Stripe
               </SelectItem>
               <SelectItem className="billing__select-item" value="paypal">
-                Paypal
+                PayPal
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* Transactions table or loading indicator */}
+        {/* ---------- Transactions Table / Loading State ---------- */}
         <div className="billing__grid">
           {isLoadingTransactions ? (
             <Loading />
-          ): (
+          ) : (
             <Table className="billing__table">
-              {/* Table header */}
+              {/* ----- Table Header ----- */}
               <TableHeader className="billing__table-header">
                 <TableRow className="billing__table-header-row">
                   <TableHead className="billing__table-cell">Date</TableHead>
                   <TableHead className="billing__table-cell">Amount</TableHead>
-                  <TableHead className="billing__table-cell">Payment Method</TableHead>
+                  <TableHead className="billing__table-cell">
+                    Payment Method
+                  </TableHead>
                 </TableRow>
               </TableHeader>
 
-              {/* Table body with data or empty state */}
+              {/* ----- Table Body ----- */}
               <TableBody className="billing__table-body">
                 {filteredData.length > 0 ? (
                   filteredData.map((transaction) => (
-                    <TableRow className="billing__table-row" key={transaction.transactionId}>
+                    <TableRow
+                      className="billing__table-row"
+                      key={transaction.transactionId}
+                    >
                       <TableCell className="billing__table-cell">
                         {new Date(transaction.dateTime).toLocaleDateString()}
                       </TableCell>
@@ -99,13 +122,16 @@ const TeacherBilling = () => {
                       </TableCell>
                     </TableRow>
                   ))
-                ):(
+                ) : (
                   <TableRow className="billing__table-row">
-                    <TableCell className="billing__table-cell text-center" colSpan={3}>
+                    <TableCell
+                      className="billing__table-cell text-center"
+                      colSpan={3}
+                    >
                       No transactions to display
                     </TableCell>
                   </TableRow>
-                )}    
+                )}
               </TableBody>
             </Table>
           )}

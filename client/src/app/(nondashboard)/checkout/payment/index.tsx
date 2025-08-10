@@ -1,33 +1,57 @@
-import React from 'react'
-import StripeProvider from './StripeProvider';
-import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { useCheckoutNavigation } from '@/hooks/useCheckoutNavigation';
-import { useCurrentCourse } from '@/hooks/useCurrentCourse';
-import { useClerk, useUser } from '@clerk/nextjs';
-import CoursePreview from '@/components/CoursePreview';
-import { CreditCard } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useCreateTransactionMutation } from '@/state/api';
-import { toast } from 'sonner';
+import React from "react";
+import StripeProvider from "./StripeProvider";
+import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { useCheckoutNavigation } from "@/hooks/useCheckoutNavigation";
+import { useCurrentCourse } from "@/hooks/useCurrentCourse";
+import { useClerk, useUser } from "@clerk/nextjs";
+import CoursePreview from "@/components/CoursePreview";
+import { CreditCard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useCreateTransactionMutation } from "@/state/api";
+import { toast } from "sonner";
+
+/* =========================================================
+   Page: PaymentPage
+   Purpose:
+     - Handles Stripe payment processing for the selected course.
+     - Displays course preview and payment form.
+     - Submits transaction details to the backend upon success.
+   Layout:
+     - Left column: Course preview.
+     - Right column: Payment form.
+     - Footer: Navigation actions (Switch Account / Pay).
+   Features:
+     - Uses Stripe Elements for secure payment input.
+     - Confirms payment and stores transaction in backend.
+     - Allows switching accounts mid-checkout.
+   ========================================================= */
 
 const PaymentPageContent = () => {
+  /* ---------- Stripe Hooks ---------- */
   const stripe = useStripe();
   const elements = useElements();
+
+  /* ---------- API Hooks ---------- */
   const [createTransaction] = useCreateTransactionMutation();
-  const {navigateToStep} = useCheckoutNavigation();
+
+  /* ---------- Navigation ---------- */
+  const { navigateToStep } = useCheckoutNavigation();
+
+  /* ---------- Course & User Data ---------- */
   const { course, courseId } = useCurrentCourse();
   const { user } = useUser();
   const { signOut } = useClerk();
 
-  //handle submit function.
+  /* ---------- Handle Payment Submission ---------- */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(!stripe || !elements) {
+    if (!stripe || !elements) {
       toast.error("Stripe service is not available");
       return;
     }
-    //Confirm the payment with Stripe
+
+    // Confirm payment with Stripe
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
@@ -35,46 +59,53 @@ const PaymentPageContent = () => {
       },
       redirect: "if_required",
     });
-    //if payment was successful,  Build a transaction object to send to the backend
-    if (result.paymentIntent?.status === "succeeded"){
-      const transactionData: Partial<Transaction> ={
+
+    // If payment succeeded, send transaction to backend
+    if (result.paymentIntent?.status === "succeeded") {
+      const transactionData: Partial<Transaction> = {
         transactionId: result.paymentIntent.id,
         userId: user?.id,
         courseId: courseId,
         paymentProvider: "stripe",
         amount: course?.price || 0,
       };
-      //Send transaction data to backend and go to next step.
-      await createTransaction(transactionData), 
+
+      await createTransaction(transactionData);
       navigateToStep(3);
     }
   };
 
-  //trigger when the user sign out
+  /* ---------- Handle Account Switch ---------- */
   const handleSignOutAndNavigate = async () => {
     await signOut();
     navigateToStep(1);
-  }
+  };
 
-  if(!course) return null;
+  /* ---------- Guard Clause ---------- */
+  if (!course) return null;
 
+  /* ---------- Render ---------- */
   return (
     <div className="payment">
       <div className="payment__container">
-  
-        {/* Order Summary Section */}
+        
+        {/* ---------- Order Summary Section ---------- */}
         <div className="payment__preview">
           <CoursePreview course={course} />
         </div>
 
-        {/* Payment Form Section */}
+        {/* ---------- Payment Form Section ---------- */}
         <div className="payment__form-container">
-          <form className="payment__form" id="payment-form" onSubmit={handleSubmit}>
+          <form
+            className="payment__form"
+            id="payment-form"
+            onSubmit={handleSubmit}
+          >
             <div className="payment__content">
               <h1 className="payment__title">Checkout</h1>
               <p className="payment__subtitle">
                 Fill out the payment details below to complete your purchase
-              </p>  
+              </p>
 
               {/* Payment Method */}
               <div className="payment__method">
@@ -86,21 +117,21 @@ const PaymentPageContent = () => {
                   <PaymentElement />
                 </div>
               </div>
-            </div> 
+            </div>
           </form>
         </div>
-  
+
       </div>
 
-      {/* Navigation Buttons */}
+      {/* ---------- Navigation Buttons ---------- */}
       <div className="payment__actions">
         <Button
           className="hover:bg-white-50/10"
           onClick={handleSignOutAndNavigate}
           variant="outline"
           type="button"
-          >
-            Switch Account
+        >
+          Switch Account
         </Button>
 
         <Button
@@ -109,17 +140,18 @@ const PaymentPageContent = () => {
           className="payment__submit"
           disabled={!stripe || !elements}
         >
-            Pay with Credit Card
+          Pay with Credit Card
         </Button>
       </div>
     </div>
   );
-}
+};
 
-const PaymentPage = () =>(
-    <StripeProvider>
-        <PaymentPageContent />
-    </StripeProvider>
-)
+/* ---------- Page Wrapper with StripeProvider ---------- */
+const PaymentPage = () => (
+  <StripeProvider>
+    <PaymentPageContent />
+  </StripeProvider>
+);
 
 export default PaymentPage;

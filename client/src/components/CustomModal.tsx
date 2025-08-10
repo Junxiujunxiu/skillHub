@@ -2,29 +2,35 @@ import React from "react";
 
 /* =========================================================
    CustomModal Component
-   - A reusable modal wrapper
-   - Shows children content in a centered overlay
-   - Closes when clicking the dark overlay
-   - Does not render anything when `isOpen` is false
+   - A generic, reusable modal wrapper for displaying any content
+   - Features:
+       1. Full-screen dark overlay
+       2. Centered modal content
+       3. Closes when clicking outside the modal (overlay)
+       4. Does not render when `isOpen` is false
    ========================================================= */
 const CustomModal = ({ isOpen, onClose, children }: CustomFixedModalProps) => {
-  /* ---------- Conditional render ----------
-     If `isOpen` is false, return null so nothing is rendered. */
+  // ---------------------------------------------------------
+  // Conditional Rendering
+  // ---------------------------------------------------------
+  // If modal state is closed, return null to prevent unnecessary render
   if (!isOpen) return null;
 
-  /* ---------- Render modal ----------
-     1. Overlay (click to close)
-     2. Content container
-     3. Inner wrapper for passed children
-  */
+  // ---------------------------------------------------------
+  // Render Modal Layout
+  // ---------------------------------------------------------
+  // Structure:
+  // 1. Overlay (dark transparent layer that closes modal on click)
+  // 2. Content wrapper (centers modal in viewport)
+  // 3. Inner container for dynamic child components
   return (
     <>
-      {/* Overlay: dark transparent background, closes modal on click */}
+      {/* Dark background overlay */}
       <div className="custom-modal__overlay" onClick={onClose} />
 
-      {/* Modal content wrapper */}
+      {/* Modal container */}
       <div className="custom-modal__content">
-        {/* Inner content area where children are rendered */}
+        {/* Slot for child components passed to modal */}
         <div className="custom-modal__inner">{children}</div>
       </div>
     </>

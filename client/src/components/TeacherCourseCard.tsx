@@ -11,13 +11,17 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 
-/* =========================
-   TeacherCourseCard Component
-   Displays a single course in the teacher's dashboard.
-   - Shows image, title, category, status, and enrollments
-   - If the user is the owner, shows Edit/Delete buttons
-   - If not owner, shows "View Only"
-   ========================= */
+/* =========================================================
+   TeacherCourseCard
+   - Displays a single course in the teacher's dashboard
+   - Shows:
+       • Course image, title, category
+       • Status (Published / Draft) with colored badge
+       • Enrollment count (if any)
+   - Actions:
+       • If owner → Edit/Delete buttons
+       • If not owner → "View Only" label
+   ========================================================= */
 const TeacherCourseCard = ({
   course,
   onEdit,
@@ -51,7 +55,7 @@ const TeacherCourseCard = ({
             {course.category}
           </CardDescription>
 
-          {/* Status (Published / Draft) with colored badge */}
+          {/* Status Badge */}
           <p className="text-sm mb-2">
             Status:{" "}
             <span
@@ -66,7 +70,7 @@ const TeacherCourseCard = ({
             </span>
           </p>
 
-          {/* Enrollment count (only if exists) */}
+          {/* Enrollment Count */}
           {course.enrollments && (
             <p className="ml-1 mt-1 inline-block text-secondary bg-secondary/10 text-sm font-normal">
               <span className="font-bold text-white-100">
@@ -81,7 +85,7 @@ const TeacherCourseCard = ({
         <div className="w-full xl:flex space-y-2 xl:space-y-0 gap-2 mt-3">
           {isOwner ? (
             <>
-              {/* Edit button */}
+              {/* Edit Button */}
               <div>
                 <Button
                   className="course-card-teacher__edit-button"
@@ -92,7 +96,7 @@ const TeacherCourseCard = ({
                 </Button>
               </div>
 
-              {/* Delete button */}
+              {/* Delete Button */}
               <div>
                 <Button
                   className="course-card-teacher__delete-button"
@@ -104,7 +108,7 @@ const TeacherCourseCard = ({
               </div>
             </>
           ) : (
-            // Fallback for non-owners
+            // Non-owner view
             <p className="text-sm text-gray-500 italic">View Only</p>
           )}
         </div>

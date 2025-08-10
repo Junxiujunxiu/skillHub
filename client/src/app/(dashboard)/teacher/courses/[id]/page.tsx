@@ -27,13 +27,26 @@ import ChapterModal from "./ChapterModal";
 import SectionModal from "./SectionModal";
 
 /* =========================================================
-   CourseEditor Component
-   - Full-page form for editing a course
-   - Loads course data from API
-   - Allows editing course details (title, description, category, price, status)
-   - Manages sections & chapters with drag-and-drop
-   - Supports video uploads for chapters
+   CourseEditor Component (Full Course Editing Page)
+   ---------------------------------------------------------
+   Purpose:
+   - Provides a full-page interface for editing an existing course.
+   - Integrates form handling (react-hook-form + zod) with API data.
+   - Allows editing basic course details (title, description, category, price, status).
+   - Manages sections and chapters via drag-and-drop and modals.
+   - Handles video uploads for chapters before saving.
+   - Saves changes to the backend and updates state in Redux.
+
+   Key Features:
+   1. Loads course data from API using courseId from URL params.
+   2. Syncs course details & sections into Redux store.
+   3. Uses modals for adding/editing sections and chapters.
+   4. Uploads and associates videos with chapters.
+   5. Allows toggling between "Published" and "Draft" status.
+   6. Responsive layout with separate left (course details) 
+      and right (sections/chapters) panels.
    ========================================================= */
+
 const CourseEditor = () => {
   /* ---------- Router & Params ---------- */
   const router = useRouter();

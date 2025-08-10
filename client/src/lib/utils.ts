@@ -4,11 +4,20 @@ import * as z from "zod";
 import { api } from "../state/api";
 import { toast } from "sonner";
 
+/* ================================
+   Tailwind / Class Utilities
+   ================================ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Convert cents to formatted currency string (e.g., 4999 -> "$49.99")
+/* ================================
+   Currency Helpers
+   ----------------
+   - formatPrice: cents -> "$X.YY"
+   - dollarsToCents: "X.YY" -> cents
+   - centsToDollars: cents -> "X.YY" (string)
+   ================================ */
 export function formatPrice(cents: number | undefined): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -16,24 +25,28 @@ export function formatPrice(cents: number | undefined): string {
   }).format((cents || 0) / 100);
 }
 
-// Convert dollars to cents (e.g., "49.99" -> 4999)
 export function dollarsToCents(dollars: string | number): number {
   const amount = typeof dollars === "string" ? parseFloat(dollars) : dollars;
   return Math.round(amount * 100);
 }
 
-// Convert cents to dollars (e.g., 4999 -> "49.99")
 export function centsToDollars(cents: number | undefined): string {
   return ((cents || 0) / 100).toString();
 }
 
-// Zod schema for price input (converts dollar input to cents)
+/* ================================
+   Zod Transforms
+   - priceSchema: takes "X.YY" and returns cents as string
+   ================================ */
 export const priceSchema = z.string().transform((val) => {
   const dollars = parseFloat(val);
   if (isNaN(dollars)) return "0";
   return dollarsToCents(dollars).toString();
 });
 
+/* ================================
+   Static Data
+   ================================ */
 export const countries = [
   "Afghanistan",
   "Albania",
@@ -233,6 +246,9 @@ export const countries = [
 
 export const customStyles = "text-gray-300 placeholder:text-gray-500";
 
+/* ================================
+   Misc. UI Constants
+   ================================ */
 export function convertToSubCurrency(amount: number, factor = 100) {
   return Math.round(amount * factor);
 }
@@ -246,6 +262,9 @@ export const courseCategories = [
   { value: "artificial-intelligence", label: "Artificial Intelligence" },
 ] as const;
 
+/* ================================
+   MUI DataGrid Dark Styles
+   ================================ */
 export const customDataGridStyles = {
   border: "none",
   backgroundColor: "#17181D",
@@ -288,11 +307,16 @@ export const customDataGridStyles = {
   },
 };
 
+/* ================================
+   FormData Builders
+   - createCourseFormData: packs course payload + sections
+   ================================ */
 export const createCourseFormData = (
   data: CourseFormData,
   sections: Section[]
 ): FormData => {
   const formData = new FormData();
+
   formData.append("title", data.courseTitle);
   formData.append("description", data.courseDescription);
   formData.append("category", data.courseCategory);
@@ -308,10 +332,14 @@ export const createCourseFormData = (
   }));
 
   formData.append("sections", JSON.stringify(sectionsWithVideos));
-
   return formData;
 };
 
+/* ================================
+   Video Upload Helpers
+   - uploadAllVideos: scans sections for new File videos and uploads them
+   - uploadVideo: PUTs to signed URL and returns chapter with hosted URL
+   ================================ */
 export const uploadAllVideos = async (
   localSections: Section[],
   courseId: string,
@@ -319,14 +347,13 @@ export const uploadAllVideos = async (
 ) => {
   const updatedSections = localSections.map((section) => ({
     ...section,
-    chapters: section.chapters.map((chapter) => ({
-      ...chapter,
-    })),
+    chapters: section.chapters.map((chapter) => ({ ...chapter })),
   }));
 
   for (let i = 0; i < updatedSections.length; i++) {
     for (let j = 0; j < updatedSections[i].chapters.length; j++) {
       const chapter = updatedSections[i].chapters[j];
+
       if (chapter.video instanceof File && chapter.video.type === "video/mp4") {
         try {
           const updatedChapter = await uploadVideo(
@@ -368,15 +395,11 @@ async function uploadVideo(
 
     await fetch(uploadUrl, {
       method: "PUT",
-      headers: {
-        "Content-Type": file.type,
-      },
+      headers: { "Content-Type": file.type },
       body: file,
     });
-    toast.success(
-      `Video uploaded successfully for chapter ${chapter.chapterId}`
-    );
 
+    toast.success(`Video uploaded successfully for chapter ${chapter.chapterId}`);
     return { ...chapter, video: videoUrl };
   } catch (error) {
     console.error(

@@ -2,15 +2,36 @@
 
 import * as React from "react"
 import * as TooltipPrimitive from "@radix-ui/react-tooltip"
-
 import { cn } from "@/lib/utils"
 
+/**
+ * TooltipProvider
+ *
+ * Wraps your app or a section of it to manage tooltip state globally.
+ */
 const TooltipProvider = TooltipPrimitive.Provider
 
+/**
+ * Tooltip
+ *
+ * Root component that controls the open/close state of the tooltip.
+ */
 const Tooltip = TooltipPrimitive.Root
 
+/**
+ * TooltipTrigger
+ *
+ * The element that the user hovers or focuses to trigger the tooltip.
+ */
 const TooltipTrigger = TooltipPrimitive.Trigger
 
+/**
+ * TooltipContent
+ *
+ * The content that appears when the tooltip is triggered.
+ * - Accepts `sideOffset` to control spacing from the trigger element.
+ * - Supports positioning animations for all sides.
+ */
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>

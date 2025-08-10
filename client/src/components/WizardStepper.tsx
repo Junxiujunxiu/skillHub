@@ -2,19 +2,30 @@ import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
 import React from 'react';
 
-
+/* =========================================================
+   WizardStepper
+   - Displays a 3-step visual indicator for the checkout process.
+   - Steps:
+       1. Checkout Details
+       2. Payment
+       3. Completion
+   - Features:
+       • Highlights current step.
+       • Marks completed steps with a checkmark.
+       • Shows connecting lines between steps.
+   ========================================================= */
 const WizardStepper = ({ currentStep }: WizardStepperProps) => {
   return (
     <div className="wizard-stepper">
-      {/* Stepper container: holds all steps and connecting lines */}
+      {/* ---------- Stepper Container ---------- */}
       <div className="wizard-stepper__container">
         {[1, 2, 3].map((step, index) => (
           <React.Fragment key={step}>
             
-            {/* STEP BLOCK */}
+            {/* ---------- Step Block ---------- */}
             <div className="wizard-stepper__step">
-
-              {/* Step circle: displays number or checkmark based on status */}
+              
+              {/* Step Circle → Number or Checkmark */}
               <div
                 className={cn("wizard-stepper__circle", {
                   "wizard-stepper__circle--completed": currentStep > step || (currentStep === 3 && step === 3),
@@ -22,7 +33,6 @@ const WizardStepper = ({ currentStep }: WizardStepperProps) => {
                   "wizard-stepper__circle--upcoming": currentStep < step,
                 })}
               >
-                {/* (a shorthand for if...else) */}
                 {currentStep > step || (currentStep === 3 && step === 3) ? (
                   <Check className="w-5 h-5" />
                 ) : (
@@ -30,7 +40,7 @@ const WizardStepper = ({ currentStep }: WizardStepperProps) => {
                 )}
               </div>
 
-              {/* Step label: shows text below the circle */}
+              {/* Step Label */}
               <p
                 className={cn("wizard-stepper__text", {
                   "wizard-stepper__text--active": currentStep >= step,
@@ -43,7 +53,7 @@ const WizardStepper = ({ currentStep }: WizardStepperProps) => {
               </p>
             </div>
 
-            {/* LINE BETWEEN STEPS */}
+            {/* ---------- Connecting Line (between steps) ---------- */}
             {index < 2 && (
               <div
                 className={cn("wizard-stepper__line", {

@@ -1,47 +1,72 @@
 "use client";
 
-import { Bell, BookOpen} from 'lucide-react'
-import React, { useState } from 'react'
-import Link from 'next/link'; // navigation
+import { Bell, BookOpen } from 'lucide-react';
+import React from 'react';
+import Link from 'next/link';
 import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 
-//testing on the left, search bar on the right
-const NavBar = ({isCoursePage} : { isCoursePage: boolean}) => {
-const {user} = useUser();
-const userRole = user?.publicMetadata?.userType as "student" | "teacher";
+/* =========================================================
+   NavBar Component
+   - Displays the top navigation bar for the dashboard
+   - Includes:
+       1. Sidebar trigger (mobile view)
+       2. Search bar with dynamic styling for course pages
+       3. Notification button
+       4. User profile button (Clerk)
+   - Props:
+       - isCoursePage (boolean): changes search bar background
+   ========================================================= */
+const NavBar = ({ isCoursePage }: { isCoursePage: boolean }) => {
+  const { user } = useUser();
+  const userRole = user?.publicMetadata?.userType as "student" | "teacher";
 
-  return ( 
+  return (
     <nav className="dashboard-navbar">
-      <div className="dashboard-navbar__container"> 
-        <div className="dashboard-navbar__search">
-            <div className="md:hidden">
-                <SidebarTrigger className="dashboard-navbar__sidebar-trigger" />
-            </div>
+      <div className="dashboard-navbar__container">
 
-            <div className="flex items-center gap-4">
-              <div className="relative group">
-                {/*always apply first classname, apply the second classname only if the condition is true */}
-              <Link href="/search" className={cn("dashboard-navbar__search-input", {
-                "!bg-customgreys-secondarybg" : isCoursePage
-              })}>
-                <span className="hidden sm:inline">search Courses</span>
+        {/* ---------- Left Section: Sidebar & Search ---------- */}
+        <div className="dashboard-navbar__search">
+
+          {/* Sidebar trigger button (mobile only) */}
+          <div className="md:hidden">
+            <SidebarTrigger className="dashboard-navbar__sidebar-trigger" />
+          </div>
+
+          {/* Search bar with icon */}
+          <div className="flex items-center gap-4">
+            <div className="relative group">
+
+              {/* Search link with conditional background for course pages */}
+              <Link
+                href="/search"
+                className={cn("dashboard-navbar__search-input", {
+                  "!bg-customgreys-secondarybg": isCoursePage
+                })}
+              >
+                <span className="hidden sm:inline">Search Courses</span>
                 <span className="sm:hidden">Search</span>
               </Link>
-              <BookOpen className="dashboard-navbar__search-icon size={18}"/>
-              </div>
+
+              {/* Search icon */}
+              <BookOpen className="dashboard-navbar__search-icon size={18}" />
             </div>
-         </div>
+          </div>
+        </div>
 
-      <div className="dashboard-navbar__actions">
-        <button className="nondashboard-navbar__notification-button">
-          <span className="nondashboard-navbar__notification-indicator"></span>
-          <Bell className="nondashboard-navbar__notification-icon" />
-        </button>
+        {/* ---------- Right Section: Notifications & Profile ---------- */}
+        <div className="dashboard-navbar__actions">
 
-          <UserButton 
+          {/* Notification button with indicator */}
+          <button className="nondashboard-navbar__notification-button">
+            <span className="nondashboard-navbar__notification-indicator"></span>
+            <Bell className="nondashboard-navbar__notification-icon" />
+          </button>
+
+          {/* User profile button (Clerk) */}
+          <UserButton
             appearance={{
               baseTheme: dark,
               elements: {
@@ -50,12 +75,12 @@ const userRole = user?.publicMetadata?.userType as "student" | "teacher";
               }
             }}
             showName={true}
-            userProfileMode='navigation'
-            userProfileUrl= {
+            userProfileMode="navigation"
+            userProfileUrl={
               userRole === "teacher" ? "/teacher/profile" : "/user/profile"
             }
-            />  
-      </div>
+          />
+        </div>
       </div>
     </nav>
   );

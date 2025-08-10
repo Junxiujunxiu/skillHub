@@ -1,67 +1,87 @@
-import React, { useEffect, useState } from 'react'
-import{ Appearance, loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
-import { useCreateStripePaymentIntentMutation } from '@/state/api';
-import { useCurrentCourse } from '@/hooks/useCurrentCourse';
-import Loading from '@/components/Loading';
+import React, { useEffect, useState } from "react";
+import { Appearance, loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
+import { useCreateStripePaymentIntentMutation } from "@/state/api";
+import { useCurrentCourse } from "@/hooks/useCurrentCourse";
+import Loading from "@/components/Loading";
 import { Elements } from "@stripe/react-stripe-js";
 
-if(!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY){
-    throw new Error("NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not set");
+/* =========================================================
+   Component: StripeProvider
+   Purpose:
+     - Wraps child components with Stripe's <Elements> context.
+     - Creates a Stripe PaymentIntent for the current course.
+     - Passes styling options for Stripe Elements.
+   Usage:
+     - Used to wrap checkout/payment pages to provide Stripe context.
+   ========================================================= */
+
+/* ---------- Environment Validation ---------- */
+if (!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY) {
+  throw new Error("NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not set");
 }
 
-// Load Stripe with the public key from your .env file
+/* ---------- Stripe Instance ---------- */
+// Load Stripe with public key from .env
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
-// Customise the appearance of Stripe Elements (card input UI)
+/* ---------- Stripe Appearance Settings ---------- */
+// Customises the look and feel of Stripe Elements UI
 const appearance: Appearance = {
-    theme:"stripe",
-    variables: {
-        colorPrimary: "#0570de",
-        colorBackground: "#18181b",
-        colorText: "#d2d2d2",
-        colorDanger: "#df1b41",
-        colorTextPlaceholder: "#6e6e6e",
-        fontFamily: "Inter, system-ui, sans-serif",
-        spacingUnit: "3px",
-        borderRadius: "10px",
-        fontSizeBase: "14px",
-    },
+  theme: "stripe",
+  variables: {
+    colorPrimary: "#0570de",
+    colorBackground: "#18181b",
+    colorText: "#d2d2d2",
+    colorDanger: "#df1b41",
+    colorTextPlaceholder: "#6e6e6e",
+    fontFamily: "Inter, system-ui, sans-serif",
+    spacingUnit: "3px",
+    borderRadius: "10px",
+    fontSizeBase: "14px",
+  },
 };
 
-//// StripeProvider wraps any child component and provides Stripe context
-const StripeProvider = ({children} : {children: React.ReactNode}) => {
+/* ---------- Provider Component ---------- */
+const StripeProvider = ({ children }: { children: React.ReactNode }) => {
+  /* ---------- Local State ---------- */
   const [clientSecret, setClientSecret] = useState<string | "">("");
+
+  /* ---------- API Hook ---------- */
   const [createStripePaymentIntent] = useCreateStripePaymentIntentMutation();
+
+  /* ---------- Course Data ---------- */
   const { course } = useCurrentCourse();
 
-  // Fetch Stripe clientSecret when course data is available
+  /* ---------- Fetch PaymentIntent ---------- */
   useEffect(() => {
     if (!course) return;
-    const fetchPaymentIntent = async () =>{
-    const result = await createStripePaymentIntent({
-      amount: course?.price ?? 9999999999999999,
-    }).unwrap();
-    
-    setClientSecret(result.clientSecret);
+
+    const fetchPaymentIntent = async () => {
+      const result = await createStripePaymentIntent({
+        amount: course?.price ?? 9999999999999999, // fallback value
+      }).unwrap();
+
+      setClientSecret(result.clientSecret);
+    };
+
+    fetchPaymentIntent();
+  }, [createStripePaymentIntent, course?.price, course]);
+
+  /* ---------- Stripe Elements Options ---------- */
+  const options: StripeElementsOptions = {
+    clientSecret,
+    appearance,
   };
 
-  fetchPaymentIntent();
-}, [createStripePaymentIntent, course?.price, course]);
+  /* ---------- Loading State ---------- */
+  if (!clientSecret) return <Loading />;
 
-// This object passes the payment info (clientSecret) and style (appearance) to Stripe <Elements>
-const options: StripeElementsOptions = {
-  clientSecret,
-  appearance,
-}
-
-if (!clientSecret) return <Loading />;
-
-// Wrap the children so they can use Stripe features like useStripe() and CardElement()
+  /* ---------- Render with Stripe Context ---------- */
   return (
     <Elements stripe={stripePromise} options={options} key={clientSecret}>
       {children}
     </Elements>
-  )
-}
+  );
+};
 
-export default StripeProvider
+export default StripeProvider;

@@ -13,28 +13,41 @@ import UserCourseProgress from "../models/userCourseProgressModel";
 import dotenv from "dotenv";
 
 dotenv.config();
+
 let client: DynamoDBClient;
 
-/* DynamoDB Configuration */
+/* =========================================================================
+   DynamoDB Configuration
+   Purpose:
+     - Configure Dynamoose and AWS SDK for DynamoDB based on environment.
+     - If in development → use DynamoDB Local.
+     - If in production → use AWS-hosted DynamoDB.
+   ========================================================================= */
 const isProduction = process.env.NODE_ENV === "production";
 
 if (!isProduction) {
+  // Development: Local DynamoDB
   dynamoose.aws.ddb.local();
   client = new DynamoDBClient({
     endpoint: "http://localhost:8000",
     region: "ap-southeast-2",
     credentials: {
-      accessKeyId: "dummyKey123",
+      accessKeyId: "dummyKey123", // Local dev credentials
       secretAccessKey: "dummyKey123",
     },
   });
 } else {
+  // Production: AWS DynamoDB
   client = new DynamoDBClient({
     region: process.env.AWS_REGION || "ap-southeast-2",
   });
 }
 
-/* DynamoDB Suppress Tag Warnings */
+/* =========================================================================
+   Suppress DynamoDB Local Tag Warnings
+   Purpose:
+     - Prevent unnecessary console warnings about unsupported features.
+   ========================================================================= */
 const originalWarn = console.warn.bind(console);
 console.warn = (message, ...args) => {
   if (
@@ -44,6 +57,15 @@ console.warn = (message, ...args) => {
   }
 };
 
+/* =========================================================================
+   Function: createTables
+   Purpose:
+     - Creates and initializes all DynamoDB tables for the models.
+   Flow:
+     1. Define all models to create tables for.
+     2. For each model → create a Dynamoose Table.
+     3. Initialize and wait for the table to be active.
+   ========================================================================= */
 async function createTables() {
   const models = [Transaction, UserCourseProgress, Course];
 
@@ -70,6 +92,15 @@ async function createTables() {
   }
 }
 
+/* =========================================================================
+   Function: seedData
+   Purpose:
+     - Inserts initial JSON data into a specified DynamoDB table.
+   Flow:
+     1. Read JSON file from disk.
+     2. Determine table name (singularized and capitalized).
+     3. Loop over items in JSON and insert them into DynamoDB.
+   ========================================================================= */
 async function seedData(tableName: string, filePath: string) {
   const data: { [key: string]: any }[] = JSON.parse(
     fs.readFileSync(filePath, "utf8")
@@ -98,6 +129,11 @@ async function seedData(tableName: string, filePath: string) {
   );
 }
 
+/* =========================================================================
+   Function: deleteTable
+   Purpose:
+     - Deletes a single DynamoDB table by name.
+   ========================================================================= */
 async function deleteTable(baseTableName: string) {
   let deleteCommand = new DeleteTableCommand({ TableName: baseTableName });
   try {
@@ -112,6 +148,14 @@ async function deleteTable(baseTableName: string) {
   }
 }
 
+/* =========================================================================
+   Function: deleteAllTables
+   Purpose:
+     - Lists and deletes all DynamoDB tables in the current environment.
+   Flow:
+     1. Fetch all table names.
+     2. Loop through and delete each table with a delay to avoid throttling.
+   ========================================================================= */
 async function deleteAllTables() {
   const listTablesCommand = new ListTablesCommand({});
   const { TableNames } = await client.send(listTablesCommand);
@@ -124,6 +168,15 @@ async function deleteAllTables() {
   }
 }
 
+/* =========================================================================
+   Function: seed (Default Export)
+   Purpose:
+     - Complete process for resetting and seeding the database.
+   Flow:
+     1. Delete all existing tables.
+     2. Create all required tables.
+     3. Seed each table with initial data from the /data directory.
+   ========================================================================= */
 export default async function seed() {
   await deleteAllTables();
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -141,6 +194,11 @@ export default async function seed() {
   }
 }
 
+/* =========================================================================
+   CLI Execution
+   Purpose:
+     - Allows running this script directly from the command line.
+   ========================================================================= */
 if (require.main === module) {
   seed().catch((error) => {
     console.error("Failed to run seed script:", error);

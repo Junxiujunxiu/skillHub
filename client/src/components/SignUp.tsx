@@ -1,66 +1,80 @@
 "use client";
 
 import { SignUp, useUser } from '@clerk/nextjs';
-import React from 'react'
+import React from 'react';
 import { dark } from '@clerk/themes';
 import { useSearchParams } from 'next/navigation';
 
+/* =========================================================
+   SignUpComponent
+   - Renders the Clerk SignUp UI with custom styling
+   - Handles conditional redirects based on:
+       1. Checkout page flow
+       2. User role (teacher/student)
+   - Preserves query parameters for seamless checkout sign-up
+   ========================================================= */
 const SignUpComponent = () => {
-     /* Check if the user is on the checkout page by seeing if showSignUp exists 
-  // in the URL. If yes, build a sign-up link that keeps their course and step 
-  // info. If not, just send them to the normal sign-up page.*/
+  /* ---------- Hooks ---------- */
   const { user } = useUser();
   const searchParams = useSearchParams();
+
+  // Determine if this is part of the checkout flow
   const isCheckoutPage = searchParams.get("showSignUp") !== null;
   const courseId = searchParams.get("id");
 
-  // If the user is on the checkout page, build a sign-up link that keeps their course and step info
-  const signInUrl = isCheckoutPage ? `/checkout?step=1&id=${courseId}&showSignUp=false`: "/signin";
+  /* ---------- Sign-in URL for footer link ---------- */
+  // Preserve course + step info if on checkout page
+  const signInUrl = isCheckoutPage
+    ? `/checkout?step=1&id=${courseId}&showSignUp=false`
+    : "/signin";
 
-  //get url to redirect the user after signing in
-const getRedirectedUrl = () => {
-  if(isCheckoutPage){
-    return `/checkout?step=2&id=${courseId}&showSignUp=false`;
-  }
+  /* ---------- Redirect Logic After Sign-up ---------- */
+  const getRedirectedUrl = () => {
+    if (isCheckoutPage) {
+      // Continue checkout process
+      return `/checkout?step=2&id=${courseId}&showSignUp=false`;
+    }
 
-  //extract user type from metadata and check if the user is a teacher then redirect them to the teacher dashboard
-  const userType = user?.publicMetadata?.userType as string;
-  if(userType === "teacher"){
-    return "/teacher/courses";
-  }
-  //If the user is not on the checkout page and not a teacher, they are redirected to this url
-  return "user/courses";
-}
-  return (<SignUp 
-          appearance={{
-            baseTheme: dark,
-            elements:{
-              rootBox: "flex w-full items-center justify-center ",
-              cardBox: "shadow-none",
-              card: "bg-customgreys-secondarybg w-full shadow-none",
-              footer: {
-                background: "#25262F",
-                padding: "0rem 2.5rem",
-                "& > div > div:nth-child(1)":{
-                  background: "#25262F",
-                },
-              },
-              formFieldLabel: "text-white-50 font-normal",
-              formButtonPrimary: "bg-primary-700 text-white-100 hover:bg-primary-600 !shadow-none",
-              formFieldInput: "bg-customgreys-primarybg text-white-50 !shadow-none",
-              footerActionLink: "text-primary-750 hover:text-primary-600"
+    // Teacher role → Teacher dashboard
+    const userType = user?.publicMetadata?.userType as string;
+    if (userType === "teacher") {
+      return "/teacher/courses";
+    }
+
+    // Default → User courses
+    return "user/courses";
+  };
+
+  /* ---------- Render ---------- */
+  return (
+    <SignUp
+      appearance={{
+        baseTheme: dark,
+        elements: {
+          rootBox: "flex w-full items-center justify-center",
+          cardBox: "shadow-none",
+          card: "bg-customgreys-secondarybg w-full shadow-none",
+          footer: {
+            background: "#25262F",
+            padding: "0rem 2.5rem",
+            "& > div > div:nth-child(1)": {
+              background: "#25262F",
             },
-          }}
-          //when the user clicks on the sign up button, they are redirected to the sign up page with this URL
-          signInUrl={signInUrl}
-          //after successful sign in, the user is redirected to this URL
-          forceRedirectUrl={getRedirectedUrl()}
-          //tells clerk to use the hash routing strategy
-          routing="hash"
-          //user is redirected to the home page after signing out
-          afterSignOutUrl="/"
-  />
+          },
+          formFieldLabel: "text-white-50 font-normal",
+          formButtonPrimary:
+            "bg-primary-700 text-white-100 hover:bg-primary-600 !shadow-none",
+          formFieldInput:
+            "bg-customgreys-primarybg text-white-50 !shadow-none",
+          footerActionLink: "text-primary-750 hover:text-primary-600",
+        },
+      }}
+      signInUrl={signInUrl} // Redirect for "Sign in" link
+      forceRedirectUrl={getRedirectedUrl()} // Post sign-up redirect
+      routing="hash" // Use hash-based routing
+      afterSignOutUrl="/" // Post sign-out redirect
+    />
   );
-}
+};
 
 export default SignUpComponent;

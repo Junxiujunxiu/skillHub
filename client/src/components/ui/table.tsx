@@ -1,7 +1,28 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
 
+/**
+ * Table
+ * 
+ * A fully styled, accessible table component system built with Tailwind CSS.
+ * 
+ * Components:
+ * - Table: The main table wrapper.
+ * - TableHeader: The <thead> section for column headers.
+ * - TableBody: The <tbody> section for table rows.
+ * - TableFooter: The <tfoot> section, usually for summary rows.
+ * - TableRow: A single table row <tr>.
+ * - TableHead: A single table header cell <th>.
+ * - TableCell: A single table data cell <td>.
+ * - TableCaption: A <caption> element for describing the table.
+ * 
+ * Features:
+ * - Responsive: Wrapped in an `overflow-auto` container for horizontal scrolling.
+ * - State-based styles for hover, selection, and checkbox alignment.
+ * - Easily composable: mix and match subcomponents.
+ */
+
+// Main table container with scroll handling
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
@@ -16,6 +37,7 @@ const Table = React.forwardRef<
 ))
 Table.displayName = "Table"
 
+// Table header (<thead>)
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
@@ -24,6 +46,7 @@ const TableHeader = React.forwardRef<
 ))
 TableHeader.displayName = "TableHeader"
 
+// Table body (<tbody>)
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
@@ -36,6 +59,7 @@ const TableBody = React.forwardRef<
 ))
 TableBody.displayName = "TableBody"
 
+// Table footer (<tfoot>)
 const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
@@ -51,6 +75,7 @@ const TableFooter = React.forwardRef<
 ))
 TableFooter.displayName = "TableFooter"
 
+// Table row (<tr>)
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
@@ -66,6 +91,7 @@ const TableRow = React.forwardRef<
 ))
 TableRow.displayName = "TableRow"
 
+// Table header cell (<th>)
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
@@ -81,6 +107,7 @@ const TableHead = React.forwardRef<
 ))
 TableHead.displayName = "TableHead"
 
+// Table data cell (<td>)
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
@@ -96,6 +123,7 @@ const TableCell = React.forwardRef<
 ))
 TableCell.displayName = "TableCell"
 
+// Table caption (<caption>)
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>

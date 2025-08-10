@@ -12,10 +12,23 @@ import {
   openChapterModal,
 } from "@/state";
 
+/* =========================================================
+   DroppableComponent
+   - Main drag-and-drop manager for course sections and chapters
+   - Features:
+       1. Allows reordering of sections and chapters
+       2. Supports adding, editing, and deleting sections/chapters
+       3. Uses @hello-pangea/dnd for drag-and-drop functionality
+   ========================================================= */
 export default function DroppableComponent() {
   const dispatch = useAppDispatch();
   const { sections } = useAppSelector((state) => state.global.courseEditor);
 
+  /* ---------- Section Drag Handler ----------
+     Triggered when a section is dragged and dropped to a new position.
+     - Prevents action if there’s no destination
+     - Reorders the `sections` array and updates Redux state
+  */
   const handleSectionDragEnd = (result: any) => {
     if (!result.destination) return;
 
@@ -28,6 +41,11 @@ export default function DroppableComponent() {
     dispatch(setSections(updatedSections));
   };
 
+  /* ---------- Chapter Drag Handler ----------
+     Triggered when a chapter is dragged within a specific section.
+     - Prevents action if there’s no destination
+     - Reorders chapters in the selected section and updates Redux state
+  */
   const handleChapterDragEnd = (result: any, sectionIndex: number) => {
     if (!result.destination) return;
 
@@ -42,6 +60,13 @@ export default function DroppableComponent() {
     dispatch(setSections(updatedSections));
   };
 
+  /* ---------- Render Main Layout ----------
+     Structure:
+       1. DragDropContext for Sections
+       2. Each section is a Draggable
+       3. Nested DragDropContext for Chapters
+       4. Add Chapter button per section
+  */
   return (
     <DragDropContext onDragEnd={handleSectionDragEnd}>
       <Droppable droppableId="sections">
@@ -63,12 +88,14 @@ export default function DroppableComponent() {
                         : "droppable-section--odd"
                     }`}
                   >
+                    {/* Section header (title + edit/delete buttons) */}
                     <SectionHeader
                       section={section}
                       sectionIndex={sectionIndex}
                       dragHandleProps={draggableProvider.dragHandleProps}
                     />
 
+                    {/* Nested DragDropContext for Chapters */}
                     <DragDropContext
                       onDragEnd={(result) =>
                         handleChapterDragEnd(result, sectionIndex)
@@ -104,6 +131,7 @@ export default function DroppableComponent() {
                       </Droppable>
                     </DragDropContext>
 
+                    {/* Add Chapter button */}
                     <Button
                       type="button"
                       variant="outline"
@@ -135,6 +163,11 @@ export default function DroppableComponent() {
   );
 }
 
+/* =========================================================
+   SectionHeader
+   - Displays section title, drag handle, and edit/delete buttons
+   - Accepts dragHandleProps from Draggable to allow moving sections
+   ========================================================= */
 const SectionHeader = ({
   section,
   sectionIndex,
@@ -150,10 +183,13 @@ const SectionHeader = ({
     <div className="droppable-section__header" {...dragHandleProps}>
       <div className="droppable-section__title-wrapper">
         <div className="droppable-section__title-container">
+          {/* Drag handle + section title */}
           <div className="droppable-section__title">
             <GripVertical className="h-6 w-6 mb-1" />
             <h3 className="text-lg font-medium">{section.sectionTitle}</h3>
           </div>
+
+          {/* Edit & Delete buttons */}
           <div className="droppable-chapter__actions">
             <Button
               type="button"
@@ -175,6 +211,8 @@ const SectionHeader = ({
             </Button>
           </div>
         </div>
+
+        {/* Optional section description */}
         {section.sectionDescription && (
           <p className="droppable-section__description">
             {section.sectionDescription}
@@ -185,6 +223,12 @@ const SectionHeader = ({
   );
 };
 
+/* =========================================================
+   ChapterItem
+   - Displays a single chapter within a section
+   - Supports drag-and-drop ordering
+   - Provides edit and delete controls for each chapter
+   ========================================================= */
 const ChapterItem = ({
   chapter,
   chapterIndex,
@@ -209,10 +253,13 @@ const ChapterItem = ({
           : "droppable-chapter--even"
       }`}
     >
+      {/* Drag handle + chapter title */}
       <div className="droppable-chapter__title">
         <GripVertical className="h-4 w-4 mb-[2px]" />
         <p className="text-sm">{`${chapterIndex + 1}. ${chapter.title}`}</p>
       </div>
+
+      {/* Edit & Delete buttons */}
       <div className="droppable-chapter__actions">
         <Button
           type="button"
