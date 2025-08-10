@@ -106,6 +106,34 @@ export const api = createApi({
       providesTags: (result, error, id) =>[{type: "Courses", id}],
     }),
 
+    updateCourse: build.mutation<Course, {courseId: string; formData: FormData}>({
+      query: ({courseId, formData}) => ({
+        url: `courses/${courseId}`,
+        method: "PUT",
+        body: formData,
+      }),
+      invalidatesTags: (result, error, {courseId}) => [
+        {type: "Courses", id: courseId },
+      ]
+    }),
+
+    createCourse: build.mutation<Course, {teacherId: string; teacherName: string}>({
+      query: (body) => ({
+        url: `courses`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Courses"]
+    }),
+
+    deleteCourse: build.mutation<{message: string}, string>({
+      query: (courseId) => ({
+        url: `courses/${courseId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Courses"]
+    }),
+
     /*-----------------------------transactions-------------------------------------*/
     getTransactions: build.query<Transaction[], string>({
       query: (userId) => `transactions?userId=${userId}`,
@@ -138,6 +166,9 @@ export const api = createApi({
 
 export const { 
   useUpdateUserMutation, 
+  useCreateCourseMutation,
+  useUpdateCourseMutation,
+  useDeleteCourseMutation,
   useGetCoursesQuery, 
   useGetCourseQuery, 
   useGetTransactionsQuery,
