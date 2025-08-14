@@ -18,6 +18,7 @@ import courseRoutes from "./routes/courseRoutes";          // Course management 
 import { DynamoDB } from "@aws-sdk/client-dynamodb";       // AWS DynamoDB client
 import useCLerkRoutes from "./routes/userClerkRoutes";     // User routes (via Clerk)
 import transactionRoutes from "./routes/transactionRoutes"; // Transaction/payment routes
+import userCourseProgressRoutes from "./routes/userCourseProgressRoutes";
 
 /* =========================================================================
    Configuration
@@ -89,6 +90,9 @@ app.use("/users/clerk", requireAuth(), useCLerkRoutes);
 
 // Transaction routes → All endpoints under /transactions (require authentication)
 app.use("/transactions", requireAuth(), transactionRoutes);
+
+// User course progress routes → All endpoints under /users/course-progress (require authentication)
+app.use("/users/course-progress", requireAuth(), userCourseProgressRoutes);
 
 /* =========================================================================
    Server Startup
