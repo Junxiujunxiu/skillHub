@@ -25,7 +25,8 @@ const customBaseQuery = async (
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
-    }
+      return headers;
+    },
   });
 
   try {
