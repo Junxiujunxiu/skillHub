@@ -1,13 +1,21 @@
 "use client"
 
+/* =========================================================
+   ACCORDION COMPONENT
+   - Wrapper around @radix-ui/react-accordion with styling
+   - Provides Accordion, AccordionItem, AccordionTrigger, AccordionContent
+   ========================================================= */
+
 import * as React from "react"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/* ---------- ROOT ACCORDION ---------- */
 const Accordion = AccordionPrimitive.Root
 
+/* ---------- ACCORDION ITEM ---------- */
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
@@ -20,6 +28,7 @@ const AccordionItem = React.forwardRef<
 ))
 AccordionItem.displayName = "AccordionItem"
 
+/* ---------- ACCORDION TRIGGER ---------- */
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
@@ -40,6 +49,7 @@ const AccordionTrigger = React.forwardRef<
 ))
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
+/* ---------- ACCORDION CONTENT ---------- */
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
@@ -54,4 +64,5 @@ const AccordionContent = React.forwardRef<
 ))
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 
+/* ---------- EXPORTS ---------- */
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }

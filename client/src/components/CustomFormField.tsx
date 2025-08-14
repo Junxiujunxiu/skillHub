@@ -31,8 +31,10 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 
+// Register filepond plugins for image handling
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
+// Props definition for custom form field component
 interface FormFieldProps {
   name: string;
   label: string;
@@ -59,6 +61,7 @@ interface FormFieldProps {
   initialValue?: string | number | boolean | string[];
 }
 
+// Main CustomFormField component for rendering various input types
 export const CustomFormField: React.FC<FormFieldProps> = ({
   name,
   label,
@@ -74,12 +77,14 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
   isIcon = false,
   initialValue,
 }) => {
-  const { control } = useFormContext();
+  const { control } = useFormContext(); // Access form context from react-hook-form
 
+  // Render specific form control based on the provided "type" prop
   const renderFormControl = (
     field: ControllerRenderProps<FieldValues, string>
   ) => {
     switch (type) {
+      // Textarea input
       case "textarea":
         return (
           <Textarea
@@ -89,6 +94,8 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             className={`border-none bg-customgreys-darkGrey p-4 ${inputClassName}`}
           />
         );
+
+      // Select dropdown
       case "select":
         return (
           <Select
@@ -114,6 +121,8 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             </SelectContent>
           </Select>
         );
+
+      // Toggle switch
       case "switch":
         return (
           <div className="flex items-center space-x-2">
@@ -128,6 +137,8 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             </FormLabel>
           </div>
         );
+
+      // File upload using FilePond
       case "file":
         const ACCEPTED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"];
         const acceptedFileTypes = accept ? [accept] : ACCEPTED_VIDEO_TYPES;
@@ -149,6 +160,8 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             credits={false}
           />
         );
+
+      // Number input
       case "number":
         return (
           <Input
@@ -159,6 +172,8 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             disabled={disabled}
           />
         );
+
+      // Multi-input field array
       case "multi-input":
         return (
           <MultiInputField
@@ -168,6 +183,8 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             inputClassName={inputClassName}
           />
         );
+
+      // Default text-based input
       default:
         return (
           <Input
@@ -192,6 +209,7 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             type !== "switch" && "rounded-md"
           } relative ${className}`}
         >
+          {/* Label section (not rendered for switch type) */}
           {type !== "switch" && (
             <div className="flex justify-between items-center">
               <FormLabel
@@ -200,6 +218,7 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
                 {label}
               </FormLabel>
 
+              {/* Optional edit icon */}
               {!disabled &&
                 isIcon &&
                 type !== "file" &&
@@ -208,18 +227,24 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
                 )}
             </div>
           )}
+
+          {/* Render actual input control */}
           <FormControl>
             {renderFormControl({
               ...field,
               value: field.value !== undefined ? field.value : initialValue,
             })}
           </FormControl>
+
+          {/* Validation error message */}
           <FormMessage className="text-red-400" />
         </FormItem>
       )}
     />
   );
 };
+
+// Props for multi-input dynamic field
 interface MultiInputFieldProps {
   name: string;
   control: any;
@@ -227,6 +252,7 @@ interface MultiInputFieldProps {
   inputClassName?: string;
 }
 
+// Component for rendering dynamic input fields with add/remove buttons
 const MultiInputField: React.FC<MultiInputFieldProps> = ({
   name,
   control,
@@ -240,6 +266,7 @@ const MultiInputField: React.FC<MultiInputFieldProps> = ({
 
   return (
     <div className="space-y-2">
+      {/* Render each input row */}
       {fields.map((field, index) => (
         <div key={field.id} className="flex items-center space-x-2">
           <FormField
@@ -255,6 +282,7 @@ const MultiInputField: React.FC<MultiInputFieldProps> = ({
               </FormControl>
             )}
           />
+          {/* Remove button */}
           <Button
             type="button"
             onClick={() => remove(index)}
@@ -266,6 +294,8 @@ const MultiInputField: React.FC<MultiInputFieldProps> = ({
           </Button>
         </div>
       ))}
+
+      {/* Add new input button */}
       <Button
         type="button"
         onClick={() => append("")}

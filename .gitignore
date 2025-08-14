@@ -1,0 +1,79 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Local DynamoDB
+.dynamodb/
+dynamodb-local/
+*.db
+*.ldb
+*.sqlite
+
+# Ignore image files if they are not intentionally tracked
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+
+# OS & IDE artifacts
+Thumbs.db
+ehthumbs.db
+.idea/
+.vscode/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+Desktop.ini
+*.lnk
+
+# Log & temp files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# TypeScript & build tools
+*.map
+*.tsbuildinfo
+.cache/
+.cache-loader/
+next-env.d.ts
+
+# testing
+/coverage
+
+# Next.js
+.next/
+out/
+*.build-manifest.json
+*.react-loadable-manifest.json
+*.middleware-manifest.json
+*.server-reference-manifest.json
+*.middleware-build-manifest.js
+
+# production
+/build
+
+# environment
+.env*
+client/.env
+server/.env
+
+# vercel
+.vercel/
+
+# client/server generated folders
+client/node_modules/
+server/node_modules/
+client/dist/
+server/dist/
