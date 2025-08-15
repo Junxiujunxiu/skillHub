@@ -2,7 +2,7 @@
    GLOBAL TYPE DECLARATIONS
    - Shared interfaces & types available across the app
    ========================================================= */
-
+  
    declare global {
     /* ---------- PAYMENT METHODS ---------- */
     interface PaymentMethod {
@@ -226,6 +226,7 @@
     }
   }
 
+  /* ---------- Window extension ---------- */
   declare global {
     interface Window {
       Clerk?: {

@@ -82,7 +82,9 @@ const Landing = () => {
   /* ---------- Handlers ---------- */
   // Navigate when a course card is clicked
   const handleCourseClick = (courseId: string) => {
-    router.push(`/search?id=${courseId}`);
+    router.push(`/search?id=${courseId}`, {
+      scroll: false,
+    });
   };
 
   /* ---------- Loading State ---------- */
@@ -115,7 +117,7 @@ const Landing = () => {
           </p>
 
           <div className="landing__cta">
-            <Link href="/search">
+            <Link href="/search" scroll={false}>
               <div className="landing__cta-button">Search for Courses</div>
             </Link>
           </div>

@@ -5,6 +5,7 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
+  getUploadVideoUrl,
 } from "../controllers/courseController";
 import { requireAuth } from "@clerk/express";
 import multer from "multer";
@@ -84,7 +85,21 @@ router.put("/:courseId", requireAuth(), upload.single("image"), updateCourse);
 router.delete("/:courseId", requireAuth(), deleteCourse);
 
 /* =========================================================================
-   Export:
-     - Exports the configured router to be used in the main app.
+   Route: POST /:courseId/sections/:sectionId/chapters/:chapterId/get-upload-url
+   Description:
+     - Generate a pre-signed URL for uploading a video file to a specific chapter.
+     - Requires authentication and ownership (handled in controller).
+     - Ensures the URL is tied to the given course, section, and chapter IDs.
+   Access: Authenticated users only (requireAuth)
+   Controller: getUploadVideoUrl
+   Example:
+     POST /courses/123/sections/456/chapters/789/get-upload-url
    ========================================================================= */
+   router.post(
+    "/:courseId/sections/:sectionId/chapters/:chapterId/get-upload-url",
+    requireAuth(),
+    getUploadVideoUrl
+  );
+  
+
 export default router;

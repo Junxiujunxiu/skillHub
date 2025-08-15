@@ -86,7 +86,7 @@ const customBaseQuery = async (
 export const api = createApi({
   baseQuery: customBaseQuery,
   reducerPath: "api",
-  tagTypes: ["Courses", "Users"],
+  tagTypes: ["Courses", "Users", "UserCourseProgress"],
   endpoints: (build) => ({
     /* -------- User (Clerk) Endpoints -------- */
     updateUser: build.mutation<User, Partial<User> & { userId: string }>({
@@ -185,6 +185,69 @@ export const api = createApi({
         body: transaction,
       }),
     }),
+
+    /* -------- User Course Progress Endpoints -------- */
+    // Retrieves all courses that a specific user is enrolled in
+    getUserEnrolledCourses: build.query<Course[], string>({
+      query: (userId) => `users/course-progress/${userId}/enrolled-courses`,
+      providesTags: ["Courses", "UserCourseProgress"],
+    }),
+
+    // Retrieves the detailed course progress for a specific user and course
+    getUserCourseProgress: build.query<
+      UserCourseProgress,
+      { userId: string; courseId: string }
+    >({
+      query: ({ userId, courseId }) =>
+        `users/course-progress/${userId}/courses/${courseId}`,
+      providesTags: ["UserCourseProgress"],
+    }),
+
+    // Updates the course progress for a specific user and course
+    updateUserCourseProgress: build.mutation<
+      UserCourseProgress,
+      {
+        userId: string;
+        courseId: string;
+        progressData: {
+          sections: SectionProgress[];
+        };
+      }
+    >({
+      query: ({ userId, courseId, progressData }) => ({
+        url: `users/course-progress/${userId}/courses/${courseId}`,
+        method: "PUT",
+        body: progressData,
+      }),
+      invalidatesTags: ["UserCourseProgress"],
+
+      // Optimistic update: immediately updates local cache for smoother UI
+      async onQueryStarted(
+        { userId, courseId, progressData },
+        { dispatch, queryFulfilled }
+      ) {
+        // Temporarily update cached data to match the new progress
+        const patchResult = dispatch(
+          api.util.updateQueryData(
+            "getUserCourseProgress",
+            { userId, courseId },
+            (draft) => {
+              Object.assign(draft, {
+                ...draft,
+                sections: progressData.sections,
+              });
+            }
+          )
+        );
+        try {
+          // Wait for server confirmation
+          await queryFulfilled;
+        } catch {
+          // Rollback to previous state if request fails
+          patchResult.undo();
+        }
+      },
+    }),
   }),
 });
 
@@ -204,4 +267,8 @@ export const {
   useGetTransactionsQuery,
   useCreateTransactionMutation,
   useCreateStripePaymentIntentMutation,
+  useUpdateUserCourseProgressMutation,
+  useGetUserCourseProgressQuery,
+  useGetUserEnrolledCoursesQuery,
+
 } = api;
