@@ -29,14 +29,14 @@ const NonDashBoardNavBar = () => {
         <div className="nondashboard-navbar__search">
 
           {/* Brand name (logo/text link to homepage) */}
-          <Link href="/" className="nondashboard-navbar__brand">
+          <Link href="/" className="nondashboard-navbar__brand" scroll={false}>
             BrandName
           </Link>
 
           {/* Search bar with icon */}
           <div className="flex items-center gap-4">
             <div className="relative group">
-              <Link href="/search" className="nondashboard-navbar__search-input">
+              <Link href="/search" className="nondashboard-navbar__search-input" scroll={false}>
                 <span className="hidden sm:inline">Search Courses</span>
                 <span className="sm:hidden">Search</span>
               </Link>
@@ -74,10 +74,10 @@ const NonDashBoardNavBar = () => {
 
           {/* When user is signed out: Show login/signup links */}
           <SignedOut>
-            <Link href="/signin" className="nondashboard-navbar__auth-button--login">
+            <Link href="/signin" className="nondashboard-navbar__auth-button--login" scroll={false}>
               Log in
             </Link>
-            <Link href="/signup" className="nondashboard-navbar__auth-button--signup">
+            <Link href="/signup" className="nondashboard-navbar__auth-button--signup" scroll={false}>
               Sign up
             </Link>
           </SignedOut>

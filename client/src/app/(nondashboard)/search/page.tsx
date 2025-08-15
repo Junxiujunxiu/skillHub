@@ -70,12 +70,16 @@ const Search = () => {
   // Select a course and update URL for deep-linking
   const handleCourseSelect = (course: Course) => {
     setSelectedCourse(course);
-    router.push(`/search?id=${course.courseId}`);
+    router.push(`/search?id=${course.courseId}`, {
+      scroll: false,
+    });
   };
 
   // Navigate to checkout with the selected course
   const handleEnrollNow = (courseId: string) => {
-    router.push(`/checkout?step=1&id=${courseId}&showSignUp=false`); 
+    router.push(`/checkout?step=1&id=${courseId}&showSignUp=false`, {
+      scroll: false,
+    }); 
   };
 
   /* ---------- Render ---------- */

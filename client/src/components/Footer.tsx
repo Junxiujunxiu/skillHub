@@ -22,6 +22,7 @@ const Footer = () => {
             key={item} // Unique key for React
             href={`/${item.toLowerCase().replace(" ", "-")}`} // Convert label to lowercase & replace space with hyphen
             className="footer__link"
+            scroll={false}
           >
             {item}
           </Link>

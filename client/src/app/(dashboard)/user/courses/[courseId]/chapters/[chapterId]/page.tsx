@@ -8,6 +8,16 @@ import ReactPlayer from "react-player";
 import Loading from "@/components/Loading";
 import { useCourseProgressData } from "@/hooks/useCourseProgressData";
 
+// Alias the component so TS stops treating it like a <video> element.
+const RP = ReactPlayer as unknown as React.ComponentType<any>;
+
+type PlayerProgress = {
+  played: number;
+  playedSeconds: number;
+  loaded: number;
+  loadedSeconds: number;
+};
+
 const Course = () => {
   const {
     user,
@@ -23,9 +33,10 @@ const Course = () => {
   } = useCourseProgressData();
   console.log("currentChapter.video:", currentChapter);
 
-  const playerRef = useRef<ReactPlayer>(null);
+  // Keep ref simple to avoid type friction (type-only change; runtime same)
+  const playerRef = useRef<any>(null);
 
-  const handleProgress = ({ played }: { played: number }) => {
+  const handleProgress = ({ played }: PlayerProgress) => {
     if (
       played >= 0.8 &&
       !hasMarkedComplete &&
@@ -76,20 +87,22 @@ const Course = () => {
         <Card className="course__video">
           <CardContent className="course__video-container">
             {currentChapter?.video ? (
-              <ReactPlayer
-                ref={playerRef}
+              <RP
+                ref={playerRef as any} // TS cast only; runtime unchanged
                 url={currentChapter.video as string}
                 controls
                 width="100%"
                 height="100%"
-                onProgress={handleProgress}
-                config={{
-                  file: {
-                    attributes: {
-                      controlsList: "nodownload",
+                onProgress={handleProgress as any} // TS cast only
+                config={
+                  {
+                    file: {
+                      attributes: {
+                        controlsList: "nodownload",
+                      },
                     },
-                  },
-                }}
+                  } as any // TS cast only
+                }
               />
             ) : (
               <div className="course__no-video">
