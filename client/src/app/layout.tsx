@@ -32,6 +32,7 @@ import { DM_Sans } from "next/font/google"; // Google font loader
 import Providers from "./providers"; // Custom global providers (theme, state, etc.)
 import { ClerkProvider } from "@clerk/nextjs"; // Auth provider
 import { Toaster } from "sonner"; // Toast notifications
+import { Suspense } from "react";
 
 // Load and configure DM Sans font
 const dmSans = DM_Sans({
@@ -60,8 +61,10 @@ export default function RootLayout({
         <body className={`${dmSans.className}`}>
           {/* Global providers (state, theme, etc.) */}
           <Providers>
+            <Suspense fallback={null}>
             {/* Main app container */}
             <div className="root-layout">{children}</div>
+            </Suspense>
             {/* Global toast notifications */}
             <Toaster richColors closeButton />
           </Providers>

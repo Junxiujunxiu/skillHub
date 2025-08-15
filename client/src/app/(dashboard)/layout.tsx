@@ -6,7 +6,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ChaptersSidebar from "./user/courses/[courseId]/ChaptersSidebar";
 
 export default function DashboardLayout({children}: {children: React.ReactNode}) {
     // This is the layout for the dashboard pages that applies to all dashboard pages
@@ -16,6 +17,16 @@ export default function DashboardLayout({children}: {children: React.ReactNode})
     const isCoursePage = /^\/user\/courses\/[^\/]+(?:\/chapters\/[^\/]+)?$/.test(
       pathname
     );
+
+    // // Check if the current page is a user course page and extract the courseId from the URL
+    useEffect(() => {
+      if (isCoursePage) {
+        const match = pathname.match(/\/user\/courses\/([^\/]+)/);
+        setCourseId(match ? match[1] : null);
+      } else {
+        setCourseId(null);
+      }
+    }, [isCoursePage, pathname]);
 
     //handle use effect isCoursePage --it is gonna make sense later
     if(!isLoaded) return <Loading />
@@ -27,8 +38,14 @@ export default function DashboardLayout({children}: {children: React.ReactNode})
     <div className="dashboard">
         <AppSidebar />
         <div className="dashboard__content">
-            {/* chapters sidebar will go if it is a course page */}
-         <div className={cn( "dashboard__main")} style={{height: "100vh"}}> 
+          {courseId && <ChaptersSidebar />}
+          <div
+            className={cn(
+              "dashboard__main",
+              isCoursePage && "dashboard__main--not-course"
+            )}
+            style={{ height: "100vh" }}
+          >
          <Navbar isCoursePage={isCoursePage} />
              <main className="dashboard__body">{children}</main>
          </div>

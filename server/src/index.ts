@@ -5,6 +5,7 @@ import cors from "cors";                 // Middleware for enabling CORS
 import helmet from "helmet";             // Middleware for securing HTTP headers
 import morgan from "morgan";             // HTTP request logging
 import * as dynamoose from "dynamoose";  // DynamoDB ORM
+import serverless from "serverless-http";
 import { 
   clerkMiddleware, 
   createClerkClient, 
@@ -18,6 +19,8 @@ import courseRoutes from "./routes/courseRoutes";          // Course management 
 import { DynamoDB } from "@aws-sdk/client-dynamodb";       // AWS DynamoDB client
 import useCLerkRoutes from "./routes/userClerkRoutes";     // User routes (via Clerk)
 import transactionRoutes from "./routes/transactionRoutes"; // Transaction/payment routes
+import userCourseProgressRoutes from "./routes/userCourseProgressRoutes";
+import seed from "./seed/seedDynamodb";
 
 /* =========================================================================
    Configuration
@@ -90,6 +93,9 @@ app.use("/users/clerk", requireAuth(), useCLerkRoutes);
 // Transaction routes → All endpoints under /transactions (require authentication)
 app.use("/transactions", requireAuth(), transactionRoutes);
 
+// User course progress routes → All endpoints under /users/course-progress (require authentication)
+app.use("/users/course-progress", requireAuth(), userCourseProgressRoutes);
+
 /* =========================================================================
    Server Startup
    ========================================================================= */
@@ -100,3 +106,29 @@ if (!isProduction) {
     console.log(`Server running on port ${port}`);
   });
 }
+/* =========================================================================
+   AWS Lambda Production Handler (need to be more secure in production)
+   =========================================================================
+   Purpose:
+   - Wraps the Express `app` for deployment on AWS Lambda.
+
+   How it works:
+   1. Checks if the event action is "seed".
+      - If yes, runs the database seed script.
+      - Returns a success message without starting the API server.
+
+   2. If not "seed", passes the request to the serverless app handler.
+      - Handles normal API requests.
+   ========================================================================= */
+const serverlessApp = serverless(app);
+export const handler = async (event: any, context: any) => {
+  if (event.action === "seed") {
+    await seed();
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: "Data seeded successfully" }),
+    };
+  } else {
+    return serverlessApp(event, context);
+  }
+};

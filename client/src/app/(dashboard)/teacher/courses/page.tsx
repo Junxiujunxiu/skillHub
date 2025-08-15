@@ -31,7 +31,7 @@ import {
    - Navigates to course editor on create/edit
    - Deletes with confirmation dialog
    ========================================================= */
-const Course = () => {
+const Courses = () => {
   /* ---------- Routing & Authentication ---------- */
   const router = useRouter();
   const { user } = useUser();
@@ -136,4 +136,4 @@ const Course = () => {
   );
 };
 
-export default Course;
+export default Courses;

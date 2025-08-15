@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import Course from "../models/courseModel";
 import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "@clerk/express";
+import AWS from "aws-sdk";
+
+const s3 = new AWS.S3();
 
 /* =========================================================================
    Controller: listCourses
@@ -103,7 +106,7 @@ export const createCourse = async (
       courseId: uuidv4(),
       teacherId,
       teacherName,
-      titile: "untitled Course",
+      title: "Untitled Course",
       description: "",
       category: "Uncategorized",
       image: "",
@@ -254,5 +257,56 @@ export const deleteCourse = async (
     });
   } catch (error) {
     res.status(500).json({ message: "Error deleting course", error });
+  }
+};
+
+/* =========================================================================
+   Controller: getUploadVideoUrl
+   Purpose:
+     - Generate a pre-signed S3 URL for secure video uploads.
+     - Return both the signed upload URL (for client upload) and the public video URL (via CloudFront).
+
+   Flow:
+     1. Extract `fileName` and `fileType` from request body.
+     2. Validate that both fields are provided; return 400 if missing.
+     3. Generate a unique ID to prevent filename conflicts.
+     4. Construct the S3 key path using the unique ID and file name.
+     5. Prepare S3 parameters for the signed URL (bucket, key, expiry, and content type).
+     6. Generate a signed URL for uploading directly to S3.
+     7. Build the public video URL using the CloudFront domain.
+     8. Respond with both URLs so the client can upload and later access the video.
+     9. Handle any errors with a 500 status and descriptive message.
+   ========================================================================= */
+export const getUploadVideoUrl = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { fileName, fileType } = req.body;
+
+  if (!fileName || !fileType) {
+    res.status(400).json({ message: "File name and type are required" });
+    return;
+  }
+
+  try {
+    const uniqueId = uuidv4();
+    const s3Key = `videos/${uniqueId}/${fileName}`;
+
+    const s3Params = {
+      Bucket: process.env.S3_BUCKET_NAME || "",
+      Key: s3Key,
+      Expires: 60,
+      ContentType: fileType,
+    };
+
+    const uploadUrl = s3.getSignedUrl("putObject", s3Params);
+    const videoUrl = `${process.env.CLOUDFRONT_DOMAIN}/videos/${uniqueId}/${fileName}`;
+
+    res.json({
+      message: "Upload URL generated successfully",
+      data: { uploadUrl, videoUrl },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error generating upload URL", error });
   }
 };
