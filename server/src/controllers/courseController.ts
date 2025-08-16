@@ -96,10 +96,11 @@ export const createCourse = async (
     // Validate required fields
     if (!teacherId || !teacherName) {
       res
-        .status(404)
+        .status(400)
         .json({ message: "Teacher Id and name are required" });
       return;
     }
+    
 
     // Create new course with default values
     const newCourse = new Course({
