@@ -53,23 +53,15 @@ const customBaseQuery = async (
       }
     }
 
-   // Extract inner `data` ONLY if the server wrapped it as { data: ... }
-if (result.data !== undefined) {
-  if (
-    typeof result.data === "object" &&
-    result.data !== null &&
-    "data" in result.data
-  ) {
-    // @ts-ignore
-    result.data = (result.data as any).data;
-  }
-} else if (
-  result.error?.status === 204 ||
-  result.meta?.response?.status === 204
-) {
-  return { data: null };
-}
-
+    // Extract only the inner `data` field from the API response
+    if (result.data) {
+      result.data = result.data.data;
+    } else if (
+      result.error?.status === 204 ||
+      result.meta?.response?.status === 204
+    ) {
+      return { data: null };
+    }
 
     return result;
   } catch (error: unknown) {

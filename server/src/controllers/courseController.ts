@@ -100,7 +100,6 @@ export const createCourse = async (
         .json({ message: "Teacher Id and name are required" });
       return;
     }
-    
 
     // Create new course with default values
     const newCourse = new Course({
