@@ -86,20 +86,27 @@ export const getCourse = async (
      4. Create a new course record with default placeholders.
      5. Save to DB and return the created course.
    ========================================================================= */
-export const createCourse = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { teacherId, teacherName } = req.body;
-
-    // Validate required fields
-    if (!teacherId || !teacherName) {
-      res
-        .status(400)
-        .json({ message: "Teacher Id and name are required" });
-      return;
-    }
+   export const createCourse = async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Accept from body OR fall back to Clerk session
+      let { teacherId, teacherName } = req.body as {
+        teacherId?: string;
+        teacherName?: string;
+      };
+  
+      // Fallback: derive from Clerk auth if body is missing
+      if (!teacherId || !teacherName) {
+        const { userId } = getAuth(req);
+        if (userId) {
+          teacherId = teacherId || userId;
+          teacherName = teacherName || "Unknown";
+        }
+      }
+  
+      if (!teacherId || !teacherName) {
+        res.status(400).json({ message: "a Teacher Id and name are required" });
+        return;
+      }
 
     // Create new course with default values
     const newCourse = new Course({
