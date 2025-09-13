@@ -63,7 +63,7 @@ export const listTransactions = async (
      4. Enable automatic payment methods (no redirects allowed).
      5. Return the client secret in the response.
    ========================================================================= */
-export const createStripePaymentIntent = async (
+export const createStripePaymemtIntent = async (
   req: Request,
   res: Response
 ): Promise<void> => {
