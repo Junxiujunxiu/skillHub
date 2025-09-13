@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  createStripePaymemtIntent,
+  createStripePaymentIntent,
   createTransaction,
   listTransactions,
 } from "../controllers/transactionController";
@@ -44,7 +44,7 @@ router.get("/", listTransactions);
    Controller: createStripePaymemtIntent
    Example: POST /transactions/stripe/payment-intent
    ========================================================================= */
-router.post("/stripe/payment-intent", createStripePaymemtIntent);
+router.post("/stripe/payment-intent", createStripePaymentIntent);
 
 /* =========================================================================
    Export:
