@@ -90,8 +90,8 @@ const PaymentPageContent = () => {
       };
 
       
-      // 👉 log exactly what you're sending for the 500 debug
-      console.log("createTransaction payload →", transactionData);
+      //  ADD THIS LINE
+    console.log("createTransaction payload →", JSON.stringify(transactionData, null, 2));
 
       await createTransaction(transactionData);
       navigateToStep(3);
