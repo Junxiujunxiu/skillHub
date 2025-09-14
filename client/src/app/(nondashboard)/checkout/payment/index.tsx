@@ -66,6 +66,19 @@ const PaymentPageContent = () => {
       },
       redirect: "if_required",
     });
+
+    // 👉 Log/handle Stripe confirm errors explicitly
+    if (result.error) {
+      console.error("Stripe confirm error:", {
+        type: result.error.type,
+        message: result.error.message,
+        code: (result.error as any).code,
+        piStatus: (result.error as any).payment_intent?.status,
+      });
+      toast.error(result.error.message || "Payment failed");
+      return;
+    }
+
     // If payment succeeded, send transaction to backend
     if (result.paymentIntent?.status === "succeeded") {
       const transactionData: Partial<Transaction> = {
@@ -75,6 +88,10 @@ const PaymentPageContent = () => {
         paymentProvider: "stripe",
         amount: course?.price || 0,
       };
+
+      
+      // 👉 log exactly what you're sending for the 500 debug
+      console.log("createTransaction payload →", transactionData);
 
       await createTransaction(transactionData);
       navigateToStep(3);
