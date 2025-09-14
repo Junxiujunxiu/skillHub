@@ -37,7 +37,7 @@ export const listTransactions = async (
   try {
     // Retrieve transactions either by userId or all
     const transactions = userId
-      ? await Transaction.query("userId").eq(userId).exec()
+      ? await Transaction.query("userId").eq(userId as string).exec()
       : await Transaction.scan().exec();
 
     res.json({
@@ -67,7 +67,7 @@ export const createStripePaymentIntent = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  let { amount } = req.body;
+  let { amount } = req.body as { amount?: number };
 
   // Default amount to 50 if not provided or invalid
   if (!amount || amount <= 0) {
@@ -77,7 +77,7 @@ export const createStripePaymentIntent = async (
   try {
     // Create a PaymentIntent object in Stripe
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
+      amount, // Expecting an integer (e.g., cents). Frontend already sends what backend expects.
       currency: "usd",
       automatic_payment_methods: {
         enabled: true,
@@ -117,12 +117,44 @@ export const createTransaction = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  // Extract from body and validate
   const { userId, courseId, transactionId, amount, paymentProvider } =
-    req.body;
+    req.body as {
+      userId?: string;
+      courseId?: string;
+      transactionId?: string;
+      amount?: number;
+      paymentProvider?: string;
+    };
+
+  // --- Guard: fail fast on bad input (avoid 500s for client mistakes)
+  if (
+    !userId ||
+    !courseId ||
+    !transactionId ||
+    typeof amount !== "number" ||
+    Number.isNaN(amount)
+  ) {
+    res.status(400).json({
+      message: "Missing or invalid fields",
+      data: { userId, courseId, transactionId, amount, paymentProvider },
+    });
+    return;
+  }
 
   try {
-    // Step 1: Get course details
-    const course = await Course.get(courseId);
+    // Step 1: Get course details (with defensive errors)
+    let course;
+    try {
+      course = await Course.get(courseId);
+    } catch (e) {
+      res.status(500).json({ message: "Failed to read course", error: e });
+      return;
+    }
+    if (!course) {
+      res.status(404).json({ message: "Course not found" });
+      return;
+    }
 
     // Step 2: Create a new transaction record
     const newTransaction = new Transaction({
@@ -133,34 +165,60 @@ export const createTransaction = async (
       amount,
       paymentProvider,
     });
-    await newTransaction.save();
+    try {
+      await newTransaction.save();
+    } catch (e) {
+      res
+        .status(500)
+        .json({ message: "Transaction save failed", error: e });
+      return;
+    }
 
     // Step 3: Create initial course progress (all chapters set to incomplete)
+    const safeSections = Array.isArray(course.sections) ? course.sections : [];
     const initialProgress = new UserCourseProgress({
       userId,
       courseId,
       enrollmentDate: new Date().toISOString(),
       overallProgress: 0,
-      sections: course.sections.map((section: any) => ({
+      sections: safeSections.map((section: any) => ({
         sectionId: section.sectionId,
-        chapters: section.chapters.map((chapter: any) => ({
-          chapterId: chapter.chapterId,
-          completed: false,
-        })),
+        chapters: (Array.isArray(section.chapters) ? section.chapters : []).map(
+          (chapter: any) => ({
+            chapterId: chapter.chapterId,
+            completed: false,
+          })
+        ),
       })),
       lastAccessedTimestamp: new Date().toISOString(),
     });
-    await initialProgress.save();
+    try {
+      await initialProgress.save();
+  } catch (e) {
+      res
+        .status(500)
+        .json({ message: "UserCourseProgress save failed", error: e });
+      return;
+    }
 
     // Step 4: Add user to the course’s enrollment list
-    await Course.update(
-      { courseId },
-      {
-        $ADD: {
-          enrollments: [{ userId }],
-        },
+    try {
+      const current = Array.isArray(course.enrollments)
+        ? course.enrollments
+        : [];
+      const already = current.some(
+        (e: any) => e && e.userId === userId
+      );
+      if (!already) {
+        course.enrollments = current.concat([{ userId }]);
+        await course.save(); // safer than $ADD on a list attribute
       }
-    );
+    } catch (e) {
+      res
+        .status(500)
+        .json({ message: "Course enrollments update failed", error: e });
+      return;
+    }
 
     // Step 5: Respond with transaction & progress data
     res.json({
