@@ -120,8 +120,6 @@ export const createTransaction = async (
   const { userId, courseId, transactionId, amount, paymentProvider } =
     req.body;
 
-    console.log("👉 Incoming request body:", req.body);
-
   try {
     // Step 1: Get course details
     const course = await Course.get(courseId);

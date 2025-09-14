@@ -33,6 +33,16 @@ const customBaseQuery = async (
     // Make API request
     const result: any = await baseQuery(args, api, extraOptions);
 
+
+    // --- dev-only request log (helps confirm body is sent) ---
+if (process.env.NODE_ENV !== "production") {
+  const a = typeof args === "string" ? { url: args } : args;
+  console.log("[RTKQ]", a.method ?? "GET", a.url, {
+    body: a.body,
+    params: a.params,
+  });
+}
+
     // Show toast for API errors
     if (result.error) {
       const errorData = result.error.data;
@@ -183,6 +193,7 @@ export const api = createApi({
         url: "transactions",
         method: "POST",
         body: transaction,
+        headers: { "Content-Type": "application/json" }, // ensure JSON
       }),
     }),
 
