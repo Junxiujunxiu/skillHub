@@ -106,6 +106,7 @@ if (!isProduction) {
     console.log(`Server running on port ${port}`);
   });
 }
+
 /* =========================================================================
    AWS Lambda Production Handler (need to be more secure in production)
    =========================================================================

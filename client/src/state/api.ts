@@ -173,9 +173,10 @@ export const api = createApi({
       { amount: number }
     >({
       query: ({ amount }) => ({
-        url: `/transactions/stripe/payment-intent`,
+        url: `transactions/stripe/payment-intent`,
         method: "POST",
         body: { amount },
+        headers: { "Content-Type": "application/json" },
       }),
     }),
     createTransaction: build.mutation<Transaction, Partial<Transaction>>({
@@ -183,6 +184,7 @@ export const api = createApi({
         url: "transactions",
         method: "POST",
         body: transaction,
+        headers: { "Content-Type": "application/json" },
       }),
     }),
 

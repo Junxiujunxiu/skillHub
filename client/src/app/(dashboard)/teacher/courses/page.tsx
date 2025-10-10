@@ -34,14 +34,14 @@ import {
 const Courses = () => {
   /* ---------- Routing & Authentication ---------- */
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();//UPDATED VERSION
 
   /* ---------- Fetch Courses (RTK Query) ---------- */
   const {
     data: courses,
     isLoading,
     isError,
-  } = useGetCoursesQuery({ category: "all" });
+  } = useGetCoursesQuery({ category: "all" }, { skip: !isLoaded }); //UPDATED VERSION
 
   /* ---------- Mutations (Create & Delete) ---------- */
   const [createCourse] = useCreateCourseMutation();
@@ -81,17 +81,26 @@ const Courses = () => {
     await deleteCourse(course.courseId).unwrap();
     // RTK Query will refetch courses after mutation
   };
-
+//--------------------------NEW VERSION--------------------------
   const handleCreateCourse = async () => {
     if (!user) return;
-
-    const result = await createCourse({
-      teacherId: user.id,
-      teacherName: user.fullName || "Unknown Teacher",
-    }).unwrap();
-
-    router.push(`/teacher/courses/${result.courseId}`, { scroll: false });
+  
+    try {
+      const created = await createCourse({
+        teacherId: user.id,
+        teacherName:
+          user.fullName ||
+          user.primaryEmailAddress?.emailAddress ||
+          "Unknown",
+      }).unwrap();
+  
+      router.push(`/teacher/courses/${created.courseId}`, { scroll: false });
+    } catch (e: any) {
+      console.error("Create course failed:", e);
+      alert(e?.data?.message ?? "Failed to create course");
+    }
   };
+  
 
   /* ---------- Loading / Error States ---------- */
   if (isLoading) return <Loading />;
