@@ -19,31 +19,24 @@ import {
 } from "@/state/api";
 
 /* =========================================================
-   Course Page Component
+   Teacher Courses Page
    Purpose:
-   - Display all teacher-owned courses
-   - Allow searching, filtering, creating, editing, and deleting courses
-   - Integrates with RTK Query for server state and Clerk for authentication
-
-   Key Features:
-   - Client-side filtering by search term & category
-   - Uses RTK Query for data fetching and mutations
-   - Navigates to course editor on create/edit
-   - Deletes with confirmation dialog
+   - Display all teacher-owned courses.
+   - Allow searching, filtering, creating, editing, and deleting.
    ========================================================= */
 const Courses = () => {
-  /* ---------- Routing & Authentication ---------- */
+  /* ---------- Routing & Auth ---------- */
   const router = useRouter();
-  const { user, isLoaded } = useUser();//UPDATED VERSION
+  const { user, isLoaded } = useUser();
 
-  /* ---------- Fetch Courses (RTK Query) ---------- */
+  /* ---------- Fetch Courses ---------- */
   const {
     data: courses,
     isLoading,
     isError,
-  } = useGetCoursesQuery({ category: "all" }, { skip: !isLoaded }); //UPDATED VERSION
+  } = useGetCoursesQuery({ category: "all" }, { skip: !isLoaded });
 
-  /* ---------- Mutations (Create & Delete) ---------- */
+  /* ---------- Mutations ---------- */
   const [createCourse] = useCreateCourseMutation();
   const [deleteCourse] = useDeleteCourseMutation();
 
@@ -51,86 +44,79 @@ const Courses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  /* ---------- Derived State (Filtered Courses) ---------- */
+  /* ---------- Unique Categories ---------- */
+  const uniqueCategories = useMemo(() => {
+    if (!courses) return [];
+    const set = new Set<string>();
+    courses.forEach((c) => {
+      if (c.category) set.add(c.category);
+    });
+    return Array.from(set).sort();
+  }, [courses]);
+
+  /* ---------- Filtered Courses ---------- */
   const filteredCourses = useMemo(() => {
     if (!courses) return [];
-
     return courses.filter((course) => {
       const matchesSearch = course.title
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
-
       const matchesCategory =
-        selectedCategory === "all" || course.category === selectedCategory;
-
+        selectedCategory === "all" ||
+        course.category.toLowerCase() === selectedCategory.toLowerCase();
       return matchesSearch && matchesCategory;
     });
   }, [courses, searchTerm, selectedCategory]);
 
   /* ---------- Handlers ---------- */
-  const handleEdit = (course: Course) => {
+  const handleEdit = (course: Course) =>
     router.push(`/teacher/courses/${course.courseId}`, { scroll: false });
-  };
 
   const handleDelete = async (course: Course) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this course?"
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this course?");
     if (!confirmed) return;
-
     await deleteCourse(course.courseId).unwrap();
-    // RTK Query will refetch courses after mutation
   };
-//--------------------------NEW VERSION--------------------------
+
   const handleCreateCourse = async () => {
     if (!user) return;
-  
     try {
       const created = await createCourse({
         teacherId: user.id,
-        teacherName:
-          user.fullName ||
-          user.primaryEmailAddress?.emailAddress ||
-          "Unknown",
+        teacherName: user.fullName || user.primaryEmailAddress?.emailAddress || "Unknown",
       }).unwrap();
-  
+
       router.push(`/teacher/courses/${created.courseId}`, { scroll: false });
     } catch (e: any) {
       console.error("Create course failed:", e);
       alert(e?.data?.message ?? "Failed to create course");
     }
   };
-  
 
-  /* ---------- Loading / Error States ---------- */
+  /* ---------- States ---------- */
   if (isLoading) return <Loading />;
   if (isError || !courses) return <div>Error loading courses.</div>;
 
   /* ---------- Render ---------- */
   return (
-    <div className="teacher-courses">
-      {/* Page Header */}
+    <div className="teacher-courses px-6">
       <Header
         title="Courses"
         subtitle="Browse your courses"
         rightElement={
-          <Button
-            onClick={handleCreateCourse}
-            className="teacher-courses__header"
-          >
-            Create course
+          <Button onClick={handleCreateCourse} className="teacher-courses__header">
+            Create Course
           </Button>
         }
       />
 
-      {/* Toolbar for Search & Category Filtering */}
       <Toolbar
         onSearch={setSearchTerm}
-        onCategoryChange={setSelectedCategory} // Ensure prop name matches Toolbar's definition
+        onCategoryChange={setSelectedCategory}
+        categories={uniqueCategories} // ✅ Fix build error — prop now passed
       />
 
-      {/* Courses Grid */}
-      <div className="teacher-courses__grid">
+      <div className="teacher-courses__grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCourses.map((course) => (
           <TeacherCourseCard
             key={course.courseId}
