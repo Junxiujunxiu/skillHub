@@ -6,61 +6,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { courseCategories } from "@/lib/utils";
 
-/* =========================================================
-   Toolbar
-   - Provides search and category filtering for courses.
-   - Includes:
-       • Text input → filters by course name.
-       • Category dropdown → filters by category.
-   - Communicates changes to parent via:
-       • onSearch(value: string)
-       • onCategoryChange(value: string)
-   ========================================================= */
-const Toolbar = ({ onSearch, onCategoryChange }: ToolbarProps) => {
-  /* ---------- Local State ---------- */
+interface ToolbarProps {
+  onSearch: (value: string) => void;
+  onCategoryChange: (value: string) => void;
+  categories: string[];
+}
+
+const Toolbar = ({ onSearch, onCategoryChange, categories }: ToolbarProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  /* ---------- Handlers ---------- */
-  // Update search term locally & notify parent
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     onSearch(value);
   };
 
-  /* ---------- Render ---------- */
   return (
-    <div className="toolbar">
-      {/* ---------- Search Input ---------- */}
+    <div className="toolbar flex items-center gap-4 mb-6">
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => handleSearch(e.target.value)}
-        placeholder="Search courses"
-        className="toolbar__search"
+        placeholder="Search courses..."
+        className="toolbar__search px-3 py-2 w-full max-w-xs rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500"
       />
 
-      {/* ---------- Category Dropdown ---------- */}
       <Select onValueChange={onCategoryChange}>
-        <SelectTrigger className="toolbar__select">
-          <SelectValue placeholder="Categories" />
+        <SelectTrigger className="toolbar__select w-[220px] rounded-md border border-gray-300">
+          <SelectValue placeholder="All Categories" />
         </SelectTrigger>
 
-        <SelectContent className="bg-customgreys-primarybg hover:bg-customgreys-primarybg">
-          {/* "All" option */}
+        <SelectContent className="bg-customgreys-primarybg text-white">
+          {/* ✅ Single 'All' option */}
           <SelectItem value="all" className="toolbar__select-item">
             All Categories
           </SelectItem>
 
-          {/* Dynamic category list */}
-          {courseCategories.map((category) => (
+          {categories.map((category) => (
             <SelectItem
-              key={category.value}
-              value={category.value}
-              className="toolbar__select-item"
+              key={category}
+              value={category}
+              className="toolbar__select-item capitalize"
             >
-              {category.label}
+              {category}
             </SelectItem>
           ))}
         </SelectContent>

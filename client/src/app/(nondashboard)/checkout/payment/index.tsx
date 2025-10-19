@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import StripeProvider from "./StripeProvider";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
@@ -7,7 +9,7 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import CoursePreview from "@/components/CoursePreview";
 import { CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCreateTransactionMutation } from "@/state/api";
+import { useCreateTransactionMutation, useGetUserEnrolledCoursesQuery } from "@/state/api";
 import { toast } from "sonner";
 
 /* =========================================================
@@ -34,12 +36,17 @@ const PaymentPageContent = () => {
   /* ---------- API Hooks ---------- */
   const [createTransaction] = useCreateTransactionMutation();
 
+  /* ✅ Added refetch hook for enrolled courses */
+  const { user } = useUser();
+  const { refetch } = useGetUserEnrolledCoursesQuery(user?.id ?? "", {
+    skip: !user,
+  });
+
   /* ---------- Navigation ---------- */
   const { navigateToStep } = useCheckoutNavigation();
 
   /* ---------- Course & User Data ---------- */
   const { course, courseId } = useCurrentCourse();
-  const { user } = useUser();
   const { signOut } = useClerk();
 
   /* ---------- Handle Payment Submission ---------- */
@@ -51,12 +58,12 @@ const PaymentPageContent = () => {
       return;
     }
 
-    //url to redirect after payment
+    // Determine redirect URL base
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_URL
-    ? `http://${process.env.NEXT_PUBLIC_LOCAL_URL}`
-    : process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    : undefined;
+      ? `http://${process.env.NEXT_PUBLIC_LOCAL_URL}`
+      : process.env.NEXT_PUBLIC_VERCEL_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : undefined;
 
     // Confirm payment with Stripe
     const result = await stripe.confirmPayment({
@@ -67,7 +74,7 @@ const PaymentPageContent = () => {
       redirect: "if_required",
     });
 
-    // 👉 Log/handle Stripe confirm errors explicitly
+    // Handle Stripe errors
     if (result.error) {
       console.error("Stripe confirm error:", {
         type: result.error.type,
@@ -79,7 +86,7 @@ const PaymentPageContent = () => {
       return;
     }
 
-    // If payment succeeded, send transaction to backend
+    // ✅ If payment succeeded, create transaction and refresh enrolled courses
     if (result.paymentIntent?.status === "succeeded") {
       const transactionData: Partial<Transaction> = {
         transactionId: result.paymentIntent.id,
@@ -89,12 +96,17 @@ const PaymentPageContent = () => {
         amount: course?.price || 0,
       };
 
-      
-      //  ADD THIS LINE
-    console.log("createTransaction payload →", JSON.stringify(transactionData, null, 2));
+      console.log("createTransaction payload →", JSON.stringify(transactionData, null, 2));
 
-      await createTransaction(transactionData);
-      navigateToStep(3);
+      try {
+        await createTransaction(transactionData);
+        await refetch(); // ✅ refresh user’s enrolled courses
+        toast.success("Payment successful! Updating your courses...");
+        navigateToStep(3);
+      } catch (error) {
+        console.error("Transaction or refetch failed:", error);
+        toast.error("Something went wrong saving your purchase.");
+      }
     }
   };
 
@@ -111,7 +123,6 @@ const PaymentPageContent = () => {
   return (
     <div className="payment">
       <div className="payment__container">
-        
         {/* ---------- Order Summary Section ---------- */}
         <div className="payment__preview">
           <CoursePreview course={course} />
@@ -143,7 +154,6 @@ const PaymentPageContent = () => {
             </div>
           </form>
         </div>
-
       </div>
 
       {/* ---------- Navigation Buttons ---------- */}

@@ -1,6 +1,6 @@
 import express from "express";           // Web server framework
 import dotenv from "dotenv";             // Load environment variables from .env
-import bodyParser from "body-parser";    // Middleware for parsing request bodies
+// import bodyParser from "body-parser";    // Middleware for parsing request bodies
 import cors from "cors";                 // Middleware for enabling CORS
 import helmet from "helmet";             // Middleware for securing HTTP headers
 import morgan from "morgan";             // HTTP request logging
@@ -59,6 +59,15 @@ const app = express();
 // Parse JSON request bodies
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
+
+//  Debug body content from API Gateway
+app.use((req, _res, next) => {
+  console.log("REQ BODY TYPE:", typeof req.body);
+  console.log("REQ BODY VALUE:", req.body);
+  next();
+});
+
 // Apply security-related HTTP headers
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -66,9 +75,9 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 // Log HTTP requests to the console
 app.use(morgan("common"));
 
-// Parse incoming requests (JSON + URL encoded)
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// // Parse incoming requests (JSON + URL encoded)
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
 
 // Enable Cross-Origin Resource Sharing
 app.use(cors());
@@ -90,8 +99,8 @@ app.use("/courses", courseRoutes);
 // User routes via Clerk → All endpoints under /users/clerk (require authentication)
 app.use("/users/clerk", requireAuth(), useCLerkRoutes);
 
-// Transaction routes → All endpoints under /transactions (require authentication)
-app.use("/transactions", requireAuth(), transactionRoutes);
+// Transactions router (handles both public + protected inside itself)
+app.use("/transactions", transactionRoutes);
 
 // User course progress routes → All endpoints under /users/course-progress (require authentication)
 app.use("/users/course-progress", requireAuth(), userCourseProgressRoutes);
@@ -121,15 +130,39 @@ if (!isProduction) {
    2. If not "seed", passes the request to the serverless app handler.
       - Handles normal API requests.
    ========================================================================= */
-const serverlessApp = serverless(app);
+   const serverlessApp = serverless(app);
+
 export const handler = async (event: any, context: any) => {
+  console.log("🟡 Raw incoming event body:", typeof event.body, event.body?.slice?.(0, 300));
+
+  // ✅ Step 1: Decode Base64 if needed
+  if (event.isBase64Encoded && event.body) {
+    const buff = Buffer.from(event.body, "base64");
+    event.body = buff.toString("utf8");
+  }
+
+  // ✅ Step 2: Parse JSON body safely
+  if (typeof event.body === "string") {
+    try {
+      event.body = JSON.parse(event.body);
+    } catch (err) {
+      console.log("⚠️ JSON parse failed:", err, "Body was:", event.body);
+      event.body = {};
+    }
+  }
+
+  // ✅ Step 3: Debug final parsed body
+  console.log("🟢 Parsed body sent to Express:", event.body);
+
+  // ✅ Step 4: Handle seeding shortcut
   if (event.action === "seed") {
     await seed();
     return {
       statusCode: 200,
       body: JSON.stringify({ message: "Data seeded successfully" }),
     };
-  } else {
-    return serverlessApp(event, context);
   }
+
+  // ✅ Step 5: Pass to Express
+  return serverlessApp(event, context);
 };
