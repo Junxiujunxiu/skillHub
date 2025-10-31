@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,  useRef  } from "react";
 import { Appearance, loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { useCreateStripePaymentIntentMutation } from "@/state/api";
 import { useCurrentCourse } from "@/hooks/useCurrentCourse";
@@ -52,18 +52,25 @@ const StripeProvider = ({ children }: { children: React.ReactNode }) => {
   /* ---------- Course Data ---------- */
   const { course } = useCurrentCourse();
 
+  const hasCreatedPI = useRef(false);
   /* ---------- Fetch PaymentIntent ---------- */
   useEffect(() => {
     if (!course) return;
-
+    if (hasCreatedPI.current) return; //  prevent double run in dev
+    hasCreatedPI.current = true;
+  
     const fetchPaymentIntent = async () => {
-      const result = await createStripePaymentIntent({
-        amount: course?.price ?? 9999999999999999, // fallback value
-      }).unwrap();
-
-      setClientSecret(result.clientSecret);
+      try {
+        const result = await createStripePaymentIntent({
+          amount: course?.price ?? 9999999999999999,
+        }).unwrap();
+  
+        setClientSecret(result.clientSecret);
+      } catch (err) {
+        console.error("Failed to create PaymentIntent:", err);
+      }
     };
-
+  
     fetchPaymentIntent();
   }, [createStripePaymentIntent, course?.price, course]);
 

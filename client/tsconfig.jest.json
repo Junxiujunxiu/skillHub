@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "jsx": "react-jsx",
+      "isolatedModules": false,
+      "types": ["jest"]
+    }
+  }
+// //  File	Purpose
+// tsconfig.json	Used by Next.js — keep "jsx": "preserve" 
+// tsconfig.jest.json	Used ONLY by Jest — "jsx": "react-jsx" 
+//cos "jsx": "preserve" That works for Next.js build, but Jest + ts-jest cannot transform JSX if it's set to "preserve".

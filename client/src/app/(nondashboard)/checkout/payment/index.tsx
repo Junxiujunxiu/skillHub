@@ -36,7 +36,7 @@ const PaymentPageContent = () => {
   /* ---------- API Hooks ---------- */
   const [createTransaction] = useCreateTransactionMutation();
 
-  /* ✅ Added refetch hook for enrolled courses */
+  /*  Added refetch hook for enrolled courses */
   const { user } = useUser();
   const { refetch } = useGetUserEnrolledCoursesQuery(user?.id ?? "", {
     skip: !user,
@@ -86,7 +86,7 @@ const PaymentPageContent = () => {
       return;
     }
 
-    // ✅ If payment succeeded, create transaction and refresh enrolled courses
+    //  If payment succeeded, create transaction and refresh enrolled courses
     if (result.paymentIntent?.status === "succeeded") {
       const transactionData: Partial<Transaction> = {
         transactionId: result.paymentIntent.id,
@@ -100,7 +100,7 @@ const PaymentPageContent = () => {
 
       try {
         await createTransaction(transactionData);
-        await refetch(); // ✅ refresh user’s enrolled courses
+        await refetch(); //  refresh user’s enrolled courses
         toast.success("Payment successful! Updating your courses...");
         navigateToStep(3);
       } catch (error) {
