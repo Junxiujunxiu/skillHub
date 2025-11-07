@@ -21,7 +21,7 @@ const config: Config = {
   },
   
 
-  transformIgnorePatterns: ["/node_modules/(?!(@clerk|uuid)/)"],
+  transformIgnorePatterns: ["/node_modules/(?!(@clerk|uuid|lucide-react)/)"],
 };
 
 export default config;
